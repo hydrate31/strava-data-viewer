@@ -118,6 +118,10 @@ export const Routes = ({ data }: PageProps<Props>) => <>
 
     <p>When last checked, you can get your Strava data zip by going to <a href="https://www.strava.com/account">Strava Account</a>, scrolling down to <strong>Download or Delete Your Account</strong> and clicking <strong>Get Started</strong>. Find <strong>Download Request (optional)</strong> which should be step 2, and click <strong>Request Your Archive</strong>.</p>
     <p>Strava will take some time to process this file - and a zip file should be sent to your email address for your Strava Account.</p>
+
+    <p>
+        Please note that due to processing of all of your activities that the processing of this upload may take several minutes.
+    </p>
     
 </>
 
