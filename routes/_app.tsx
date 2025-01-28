@@ -15,9 +15,9 @@ export default function App({ Component, state }: PageProps, ctx: any) {
 
         </main>
         <footer>
-          plop
+          
         </footer>
-        <script>feather.replace();</script>
+        {/*<script>feather.replace();</script>*/}
       </body>
     </html>
   );
