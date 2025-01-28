@@ -46,7 +46,6 @@ export default function Layout({ Component, state, data, url }: PageProps, ctx) 
 
             <h1><a href={`https://www.strava.com/athletes/${data.profile.athelete_id}`}>{data.profile.first_name} {data.profile.last_name}</a></h1>
             <address>
-                <i data-feather="map"></i> &nbsp; 
                 {data.profile.city + ", "}
                 {data.profile.state + ", "}
                 {data.profile.country + " "}

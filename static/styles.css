@@ -150,3 +150,29 @@ button.primary {
     cursor: pointer;
   }
 }
+
+table {
+  > thead {
+    > tr {
+      background-color: #f7f7fa;
+      border-bottom: 1px solid #dfdfe8;
+
+      > th {
+        font-weight: 600;
+        text-align: left;
+        padding: 6px 20px;
+      }
+    }
+  }
+
+  > tbody {
+    > tr {
+      border-bottom: 1px solid #f0f0f5 !important;
+
+      > td {
+        text-align: left;
+        padding: 6px 20px;
+      }
+    }
+  }
+}
