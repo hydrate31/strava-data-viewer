@@ -29,8 +29,6 @@ export const handler: Handlers<Props> = {
 };
 
 export const Gear = ({ data }: PageProps<Props>) => <>
-    <h1>My Gear</h1>
-
     <section>
         <h2>My Bikes</h2>
         <table>

@@ -27,7 +27,6 @@ export const Routes = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>Routes</title>
     </Head>
-    <h2>My Routes</h2>
     <table>
         <thead>
             <tr>

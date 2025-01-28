@@ -32,11 +32,10 @@ export const handler: Handlers<Props> = {
     },
 };
 
-export const Profile = (props: PageProps<Props>) => <>
+export const Challenges = (props: PageProps<Props>) => <>
     <Head>
         <title>Challenges</title>
     </Head>
-    <h2>Challenges</h2>
 
     <h3>Global</h3>
     {props.data.challenges.global.length > 0 && <table>
@@ -106,4 +105,4 @@ export const Profile = (props: PageProps<Props>) => <>
     {props.data.goals.length == 0 && <p>None</p>} 
 </>
 
-export default Profile
+export default Challenges
