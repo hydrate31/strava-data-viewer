@@ -83,10 +83,11 @@ export const Challenges = (props: PageProps<Props>) => <>
             <tr>
                 <th>Type</th>
                 <th>Activity</th>
+                <th>Goal</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Segment Id</th>
-                <th>Time Period</th>
+                {/*<th>Time Period</th>*/}
                 <th>Interval Time</th>
             </tr>
         </thead>
@@ -94,10 +95,11 @@ export const Challenges = (props: PageProps<Props>) => <>
             {props.data.goals.map((goal: any) => <tr>
                 <td>{goal.goal_type}</td>
                 <td>{goal.activity_type}</td>
+                <td>{goal.goal}</td>
                 <td>{goal.start_date}</td>
                 <td>{goal.end_date}</td>
                 <td>{goal.segment_id}</td>
-                <td>{goal.time_period}</td>
+                {/*<td>{goal.time_period}</td>*/}
                 <td>{goal.interval_time}</td>
             </tr>)}
         </tbody>

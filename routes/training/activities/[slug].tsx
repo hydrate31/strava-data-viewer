@@ -4,11 +4,13 @@ import service from "../../../packages/strava.data.service/index.ts";
 
 type Props = {
     mapData: string
+    profile: Awaited<ReturnType<typeof service.profile.get>>
 } & Awaited<ReturnType<typeof service.activities.get>>
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
         const { activity, geoJson } = await service.activities.get(ctx.params.slug);
+                const profile = await service.profile.get();
 
         const mapData = `
             // Creating map options
@@ -36,7 +38,7 @@ export const handler: Handlers<Props> = {
             map.fitBounds(jsonLayer.getBounds());
         `
 
-        return ctx.render({ activity, mapData });
+        return ctx.render({ profile, activity, mapData });
     },
 };
 
@@ -53,12 +55,29 @@ export const Activity = ({ data }: PageProps<Props>) => <>
         <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
         <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     </Head>
-    <p>{data.activity.activity_date}</p>
-    <h2>{data.activity.activity_type}  - {data.activity.activity_name}</h2>
+    <details open>
+        <summary>
+            <h1>{data.profile.first_name} {data.profile.last_name} - {data.activity.activity_type}</h1>
+        </summary>
+        <section class="header">
+            <time>{data.activity.activity_date}</time>
+            <h2>{data.activity.activity_name}</h2>
+            {data.activity.activity_description != '' ? <p>{data.activity.activity_description}</p> : <button disabled>No description</button>}
+        </section>
+        <section class="details">
+            
+        </section>
+    </details>
+
+    <section class="map">
+        <div id="map" style="width: 100%; height: 24rem; display: inline-block;"></div>
+        <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
+    </section>
+   
     {data.activity.activity_description ?? <button>Add a description</button>}
     {data.activity.activity_private_note ?? <button>Add a private notes</button>}
-    <section>
 
+    <section>
         <p>distance: {data.activity.distance} km</p>
         <p>moving time: {data.activity.moving_time}</p>
         <p>elevation: {data.activity.elevation_gain} m</p>
@@ -70,13 +89,6 @@ export const Activity = ({ data }: PageProps<Props>) => <>
         <p>calories: {data.activity.calories}</p>
         <p>elapsed time: {data.activity.elapsed_time}</p>
     </section>
-
-    <section>
-        <div id="map" style="width: 100%; height: 24rem; display: inline-block;"></div>
-        <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
-    </section>
-   
-    
 </>
 
 export default Activity

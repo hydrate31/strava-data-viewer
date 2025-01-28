@@ -184,3 +184,41 @@ table {
     }
   }
 }
+
+section.map {
+  border: 1px solid #dfdfe8;
+  padding: 2px;
+}
+
+details {
+  margin-top: 2em;
+  border: 1px solid #dfdfe8;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+
+  > summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 45px;
+    background: #f7f7fa;
+    color: black;
+    border-bottom: 1px solid #dfdfe8;
+    padding: 9px 20px;
+
+    > h1 {
+      margin-top: 0.7em;
+      font-size: 1.2em;
+      font-weight: 400;
+    }
+  }
+
+  > section {
+    padding: 9px 20px;
+    background-color: white;
+  }
+}
