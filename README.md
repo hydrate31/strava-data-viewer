@@ -1,19 +1,21 @@
-# Fresh project
+# Strava Data Viewer
 
-Your new Fresh project is ready to go. You can follow the Fresh "Getting
-Started" guide here: https://fresh.deno.dev/docs/getting-started
+Designed to view the data you have exported from your Strava accouint.
 
-## Env Files
+## Requirements
+### Deno
+The Deno runtime must be installed. Please see installation instructions:
+https://deno.land/manual/getting_started/installation
+
+### Env Files
 The env file is extremely important. Without it this will not function.
 
 ### Usage
 
-Make sure to install Deno: https://deno.land/manual/getting_started/installation
-
-Then start the project:
+Start the project:
 
 ```
 deno task start
 ```
 
-This will watch the project directory and restart as necessary.
+The project will start on port 3000 http://localhost:3000/
