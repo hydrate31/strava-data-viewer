@@ -30,12 +30,12 @@ export const handler: Handlers<Props> = {
             var heatmapLayer = L.layerGroup([
                 ${heatmaps?.map(entry => `L.polyline(\r\n
                     [${entry.map((point: number[]) => `[${point[1]}, ${point[0]}]`).join(',\r\n')},],
-                    { 'weight': 5, 'color': 'red' }
+                    { 'weight': 2, 'color': 'blue' }
                 \r\n)`).filter(a => a).join(', ')}
             ])
 
             map.addLayer(heatmapLayer)
-            //map.fitBounds(heatmapLayer.getBounds());
+            map.fitBounds(heatmapLayer.getBounds());
         `
 
         return ctx.render({ mapData });
