@@ -10,13 +10,19 @@ export default function App({ Component, state }: PageProps, ctx: any) {
         {/*<script src="https://unpkg.com/feather-icons"></script>*/}
       </head>
       <body>
+        <header>
+          <nav>
+              <li>
+                <a href="/profile">Profile</a>
+              </li>
+              <li>
+                <a href="/heatmap">Heatmap</a>
+              </li>
+          </nav>
+        </header>
         <main>
           <Component />
-
         </main>
-        <footer>
-          
-        </footer>
         {/*<script>feather.replace();</script>*/}
       </body>
     </html>

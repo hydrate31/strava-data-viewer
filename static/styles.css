@@ -16,8 +16,16 @@ body {
 }
 
 main {
-  max-width: 1200px;
   width: 100%;
+
+  > * {
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+  > section.breakout {
+    width: 100vw;
+    max-width: 100vw;
+  }
 }
 
 footer {

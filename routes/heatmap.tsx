@@ -56,8 +56,8 @@ export const Heatmap = ({ data }: PageProps<Props>) => <>
         <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     </Head>
 
-    <section>
-        <div id="map" style="width: 100%; height: calc(100vh - 10em); display: inline-block;"></div>
+    <section class="breakout">
+        <div id="map" style="width: 100%; height: calc(100vh - 56px); display: inline-block;"></div>
         <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
     </section>
 </>
