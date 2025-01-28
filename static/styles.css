@@ -1,0 +1,152 @@
+@import url("./header.css");
+@import url("./profile.css");
+
+body, h1, h2, h3, h4, h5, h6, p, span, a {
+  font-family: "Segoe UI", "Helvetica Neue";
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f7f7fa;
+  padding: 0;
+  margin: 0;
+}
+
+main {
+  max-width: 1200px;
+  width: 100%;
+}
+
+footer {
+  background-color: #e8e8e8;
+  min-height: 3em;
+  display: flex;
+  width: 100%;
+}
+
+ol.media-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1em;
+  padding: 0;
+  margin: 0;
+
+  > li { 
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    border-radius: 1em;
+
+    &:hover {
+      opacity: 0.8;
+
+    }
+
+    img {
+      max-width: 10rem;
+      max-height: 7rem;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+  }
+}
+
+table {
+  width: 100%;
+}
+
+
+nav[role="tablist"] {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #f0f0f5;
+
+  > ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      list-style: none;
+      padding: 0.6em 1em;
+
+      &:has(button) {
+        padding-inline: 0.2em;
+      }
+    }
+
+    > li[role="tab"] {
+      padding: 0.6em 1em;
+      margin-bottom: -1px;
+
+      &[selected] {
+        border-top: 2px solid #fc5200;
+        border-right: 1px solid #f0f0f5;
+        border-left: 1px solid #f0f0f5;
+        background-color: white;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: #f7f7fa;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+
+}
+
+
+button {
+  background-color: #f0f0f5;
+  border-color: #f0f0f5 !important;
+  outline: none;
+  color: black;
+  border-radius: 4px;
+  border: 1px solid;
+  text-align: center;
+  font-size: 12px;
+  margin-left: 12px;
+  min-height: 24px;
+  padding: 2px 9px;
+  margin: 0;
+
+  &:hover {
+    background-color: #e1e1eb;
+    border-color: #e1e1eb;
+    color: #242428;
+    cursor: pointer;
+  }
+}
+
+button.primary {
+  background-color: #fc5200;
+  border-color: #fc5200;
+  color: white;
+  border-radius: 4px;
+  border: 1px solid;
+  text-align: center;
+  font-size: 12px;
+  margin-left: 12px;
+  min-height: 24px;
+  padding: 2px 9px;
+
+  &:hover {
+    background-color: #c94100;
+    cursor: pointer;
+  }
+}

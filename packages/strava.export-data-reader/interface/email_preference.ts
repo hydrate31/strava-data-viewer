@@ -1,0 +1,34 @@
+export interface IEmailPreference {
+    when_someone_joins_strava: string
+    when_i_achieve: string
+    when_someone_beats_my_achievement: string
+    when_i_update_challenge: string
+    when_i_complete_challenge_with_reward: string
+    when_friend_invites_to_club: string
+    when_someone_requests_club_join: string
+    when_post_in_club: string
+    when_event_in_club: string
+    when_friend_invites_to_event: string
+    when_24h_before_event_end: string
+    when_event_changed: string
+    when_event_new_discussion: string
+    when_someone_comments_event: string
+    when_someone_mentions_me: string
+    when_someone_comments: string
+    when_someone_kudos: string
+    when_new_friends_to_follow: string
+    when_friends_post_activity: string
+    when_analysis_available: string
+    when_consent_required_for_upload: string
+    when_someone_follows: string
+    recieve_follower_feed_emails: string
+    recieve_comments_emails: string
+    recieve_kudos_emails: string
+    recieve_newsletter_emails: string
+    when_someone_shares_challenge: string
+    when_someone_shares_route: string
+    when_someone_shares_activity: string
+    when_someone_invites_challenge: string
+    when_my_challenge_accepted: string
+    when_feedback: string
+}
