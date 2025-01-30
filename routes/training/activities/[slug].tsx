@@ -48,6 +48,11 @@ const time = {
     getHours: (seconds: number) => Math.floor(Math.floor(seconds / 60) / 60),
 }
 
+const UnitDisplay = ({ value, unit, description }: { value: string, unit: string, description: string}) => <div class="unit-display">
+    <span class="value">{value}</span>
+    <span class="unit">{unit}</span>
+    <span class="description">{description}</span>
+</div>
 
 export const Activity = ({ data }: PageProps<Props>) => <>
     <Head>
@@ -65,7 +70,7 @@ export const Activity = ({ data }: PageProps<Props>) => <>
             {data.activity.activity_description != '' ? <p>{data.activity.activity_description}</p> : <button disabled>No description</button>}
         </section>
         <section class="details">
-            
+
         </section>
     </details>
 
@@ -77,10 +82,19 @@ export const Activity = ({ data }: PageProps<Props>) => <>
     {data.activity.activity_description ?? <button>Add a description</button>}
     {data.activity.activity_private_note ?? <button>Add a private notes</button>}
 
+    <div class="unit-display">
+        <span class="value" />
+        <span class="unit" />
+        <span class="description" />
+    </div>
+
     <section>
-        <p>distance: {data.activity.distance} km</p>
-        <p>moving time: {data.activity.moving_time}</p>
-        <p>elevation: {data.activity.elevation_gain} m</p>
+        <div class="unit-row">
+            <UnitDisplay unit="km" description="Distance" value={data.activity.distance} />
+            <UnitDisplay unit="" description="Moving Time" value={data.activity.moving_time} />
+            <UnitDisplay unit="m" description="Elevation" value={data.activity.elevation_gain} />
+        </div>
+        <br />
 
         <h3>Speed</h3>
         <p>max: {data.activity.max_speed} kmh</p>

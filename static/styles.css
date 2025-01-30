@@ -187,6 +187,7 @@ table {
 
 section.map {
   border: 1px solid #dfdfe8;
+  box-sizing: border-box;
   padding: 2px;
 }
 
@@ -220,5 +221,22 @@ details {
   > section {
     padding: 9px 20px;
     background-color: white;
+  }
+}
+
+div.unit-row {
+
+  > div.unit-display {
+    display: grid;
+    
+    > span.value {
+
+    }
+    > span.unit {
+      
+    }
+    > span.description {
+      
+    }
   }
 }
