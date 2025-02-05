@@ -20,6 +20,10 @@ header {
       justify-content: center;
       align-items: center;
 
+      &[selected] {
+        box-shadow: inset 0 -2px 0 0 #fc5200;
+      }
+
       > a {
         color: #494950;
         text-decoration: none;
