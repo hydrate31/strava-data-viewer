@@ -47,11 +47,19 @@ export const Followers = (props: PageProps<Props>) => <>
         <br />
     
         <h3>Followers</h3>
-        {props.data.followers.length > 0 && <ul>
-            {props.data.followers.map((follow: any) => <li>
-                <a href={`https://www.strava.com/athletes/${follow.athelete_id}`} title={follow.created_at}>{follow.athelete_id}</a>
-            </li>)}
-        </ul> }
+
+        {props.data.followers.length > 0 && <table>
+            <thead>
+                <tr>
+                    <th>Athelete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.data.followers.map((follow: any) => <tr>
+                    <td><a href={`https://www.strava.com/athletes/${follow.athelete_id}`}>{follow.athelete_id}</a></td>
+                </tr>)}
+            </tbody>
+        </table> }
         {props.data.followers.length == 0 && <p>None</p>} 
     </section>
 </>
