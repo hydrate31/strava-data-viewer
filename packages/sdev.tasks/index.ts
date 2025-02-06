@@ -16,7 +16,6 @@ export default {
     },
     status: async (type: TaskType, id: string): Promise<string> => {
         const result = await tasks.get<string>([`${type}:${id}`]);
-        console.log('value:::::::', result?.value)
         return result?.value ?? "stopped";
     }
 }
