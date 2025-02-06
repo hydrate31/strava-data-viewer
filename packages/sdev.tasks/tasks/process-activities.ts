@@ -3,6 +3,9 @@ import colors from "npm:colors";
 import { StravaDataService } from "../../strava.data.service/index.ts";
 
 import compressing from "npm:compressing";
+import sdevTasks from "../index.ts";
+import { TaskType } from "../interfaces/task-type.ts";
+import { QueueEntry } from "../interfaces/queue-entry.ts";
 
 export const activities = {
     process: async (folder: string, strava: StravaDataService) => {
@@ -15,5 +18,11 @@ export const activities = {
                 console.log(colors.green("::Activity::") + ` ${dirEntry.name}`)
             }
         }
+
+        sdevTasks.enqueue({
+            userId: folder,
+            type: TaskType.GenerateHeatmap,
+            body: "Generating heatmap from activities."
+        } as QueueEntry);
     }
 }

@@ -64,15 +64,6 @@ export const handler: Handlers<Props> = {
                 } as QueueEntry);
             }
 
-            if (await sdevTasks.status(TaskType.GenerateHeatmap, exportFilename) !== "running") {
-                sdevTasks.enqueue({
-                    userId: exportFilename,
-                    type: TaskType.GenerateHeatmap,
-                    body: "Generating heatmap from activities."
-                } as QueueEntry);
-            }
-
-
             console.info(' ------------ Cleanup ------------')
             if (await fileExists(exportZipFile)) {
                 await Deno.remove(exportZipFile)
