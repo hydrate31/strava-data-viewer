@@ -30,9 +30,10 @@ const extractActivities = async (filename: string, service: StravaDataService) =
         if (dirEntry.name.endsWith(".gz")) {
             await compressing.gzip.uncompress(`${activitiesDir}/${dirEntry.name}`, `${activitiesDir}/${dirEntry.name.replace('.gz', '')}`)
             await Deno.remove(`${activitiesDir}/${dirEntry.name}`)
+            console.log(` ${activitiesDir}/${dirEntry.name}`)
         }
     }
-
+    console.log('Generating Heatmap')
     await Deno.mkdir(`./data/${filename}/heatmap/`)
     for await (const dirEntry of Deno.readDir(activitiesDir)) {
         if (dirEntry.name.endsWith(".gpx")) {
@@ -43,6 +44,7 @@ const extractActivities = async (filename: string, service: StravaDataService) =
                 points: points.map(point => [point[0], point[1]])
             }
             await Deno.writeTextFile(`./data/${filename}/heatmap/${id}.json`, JSON.stringify(json));
+            console.log(` ./data/${filename}/heatmap/${id}.json`)
         }
     }
 
@@ -75,14 +77,19 @@ export const handler: Handlers<Props> = {
                 await Deno.remove(exportZipFile)
             }
             await Deno.writeFile(exportZipFile, result.value);
-            
+            console.info(' ------------ Extracting export archive ------------')
             await extractExportFile(exportFilename);
-            await extractActivities(exportFilename, service);
+            console.info(' ------------ Finished: Extracting export archive ------------')
+            console.info(' ------------ Extracting activities ------------')
+            await extractActivities(exportFilename, strava);
+            console.info(' ------------ Finished: Extracting activities ------------')
 
 
+            console.info(' ------------ Cleanup ------------')
             if (await fileExists(exportZipFile)) {
                 await Deno.remove(exportZipFile)
             }
+            console.info(' ------------ Finished: Cleanup ------------')
         }
         else {
             return ctx.render({
