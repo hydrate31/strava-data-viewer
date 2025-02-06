@@ -1,12 +1,19 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
-import profile from "../../packages/strava.data.service/profile.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IActivity } from "../../packages/strava.export-data-reader/interface/activity.ts";
+import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IFollow } from "../../packages/strava.export-data-reader/interface/follow.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    activities: Awaited<ReturnType<typeof service.activities.list>>
+    activities: IActivity[]
+    profile: IProfile
+    media: IMedia[]
+    followers: IFollow[]
+    following: IFollow[]
+    clubs: IClub[]
 }
 
 const time = {
@@ -17,14 +24,23 @@ const time = {
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const activities = await service.activities.list();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const activities = await strava.activities.list();
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        const followers = await strava.profile.getFollowers();
+        const following = await strava.profile.getFollowing();
+        const clubs = await strava.profile.getClubs();
 
         return ctx.render({
+            activities,
             profile,
             media,
-            activities,
+            followers,
+            following,
+            clubs
         });
     },
 };

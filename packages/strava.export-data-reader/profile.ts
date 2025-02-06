@@ -15,7 +15,7 @@ import { IFollow } from "./interface/follow.ts";
 import { IClub } from "./interface/club.ts";
 
 
-export default {
+export default (folder: string) => ({
     get: async (): Promise<IProfile> => {
         const data = await Deno.readTextFile("./data/export/profile.csv");
         const profile: IProfile = parse(data, {
@@ -127,4 +127,4 @@ export default {
         
         return clubs;
     }
-}
+})

@@ -1,29 +1,37 @@
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
-import profile from "../../packages/strava.data.service/profile.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IBike } from "../../packages/strava.export-data-reader/interface/bike.ts";
+import { IComponent } from "../../packages/strava.export-data-reader/interface/component.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import { IShoe } from "../../packages/strava.export-data-reader/interface/shoe.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    bikes: Awaited<ReturnType<typeof service.gear.bikes>>
-    components: Awaited<ReturnType<typeof service.gear.components>>
-    shoes: Awaited<ReturnType<typeof service.gear.shoes>>
+    profile: IProfile
+    media: IMedia[]
+    bikes: IBike[]
+    components: IComponent[]
+    shoes: IShoe[]
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const bikes = await service.gear.bikes();
-        const components = await service.gear.components();
-        const shoes = await service.gear.shoes();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        
+        const bikes = await strava.gear.bikes();
+        const components = await strava.gear.components();
+        const shoes = await strava.gear.shoes();
 
         return ctx.render({
             profile,
             media,
             bikes,
             components,
-            shoes,
+            shoes
         });
     },
 };

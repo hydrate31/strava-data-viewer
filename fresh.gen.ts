@@ -5,7 +5,6 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
-import * as $_middleware_auth from "./routes/_middleware_auth.ts";
 import * as $blog from "./routes/blog.tsx";
 import * as $dashboard_activity_feed from "./routes/dashboard/activity-feed.tsx";
 import * as $heatmap from "./routes/heatmap.tsx";
@@ -30,7 +29,6 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
-    "./routes/_middleware_auth.ts": $_middleware_auth,
     "./routes/blog.tsx": $blog,
     "./routes/dashboard/activity-feed.tsx": $dashboard_activity_feed,
     "./routes/heatmap.tsx": $heatmap,

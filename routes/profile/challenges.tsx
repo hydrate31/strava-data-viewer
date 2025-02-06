@@ -1,24 +1,39 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IActivity } from "../../packages/strava.export-data-reader/interface/activity.ts";
+import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IFollow } from "../../packages/strava.export-data-reader/interface/follow.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import { IGlobalChallenge } from "../../packages/strava.export-data-reader/interface/global-challenges.ts";
+import { IGroupChallenge } from "../../packages/strava.export-data-reader/interface/group-challenges.ts";
+import { IGoal } from "../../packages/strava.export-data-reader/interface/goal.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    goals: Awaited<ReturnType<typeof service.profile.getGoals>>,
+    activities: IActivity[]
+    profile: IProfile
+    media: IMedia[]
+    followers: IFollow[]
+    following: IFollow[]
+    clubs: IClub[]
+    goals: IGoal[]
     challenges: {
-        global: Awaited<ReturnType<typeof service.profile.getGlobalChallenges>>,
-        group: Awaited<ReturnType<typeof service.profile.getGroupChallenges>>,
+        global: IGlobalChallenge[],
+        group: IGroupChallenge[],
     }
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const goals = await service.profile.getGoals();
-        const global = await service.profile.getGlobalChallenges();
-        const group = await service.profile.getGroupChallenges();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        const global = await strava.profile.getGlobalChallenges();
+        const group = await strava.profile.getGroupChallenges();
+        const goals = await strava.profile.getGoals();
 
         return ctx.render({
             profile,

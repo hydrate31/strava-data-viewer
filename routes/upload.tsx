@@ -1,6 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../packages/strava.data.service/index.ts";
 import {
     compress,
     decompress
@@ -8,26 +8,24 @@ import {
 import compressing from "npm:compressing";
 import { fileExists } from "../packages/strava.export-data-reader/helpers/fileExists.ts";
 
-
-
 interface Props {
     message: string | null;
 }
 
-const extractExportFile = async () => {
-    if (await fileExists("./data/export")) {
-        await Deno.remove("./data/export", { recursive: true })
+const extractExportFile = async (filename: string) => {
+    if (await fileExists(`./data/${filename}`)) {
+        await Deno.remove(`./data/${filename}`, { recursive: true })
     }
     try {
-        await decompress("./data/export.zip", "./data", {
+        await decompress(`./data/${filename}.zip`, "./data", {
             includeFileName: true,
         });
     }
     catch {}
 }
 
-const extractActivities = async () => {
-    const activitiesDir = "./data/export/activities";
+const extractActivities = async (filename: string, service: StravaDataService) => {
+    const activitiesDir = `./data/${filename}/activities`;
     for await (const dirEntry of Deno.readDir(activitiesDir)) {
         if (dirEntry.name.endsWith(".gz")) {
             await compressing.gzip.uncompress(`${activitiesDir}/${dirEntry.name}`, `${activitiesDir}/${dirEntry.name.replace('.gz', '')}`)
@@ -35,16 +33,16 @@ const extractActivities = async () => {
         }
     }
 
-    await Deno.mkdir(`./data/export/heatmap/`)
+    await Deno.mkdir(`./data/${filename}/heatmap/`)
     for await (const dirEntry of Deno.readDir(activitiesDir)) {
         if (dirEntry.name.endsWith(".gpx")) {
             const id  = dirEntry.name.replace(".gpx", "")
-            const { activity, geoJson } = await service.activities.get(dirEntry.name.replace(".gpx", ""));await service.activities.get(dirEntry.name.replace(".gpx", ""));
+            const { activity, geoJson } = await service.activities.get(dirEntry.name.replace(".gpx", ""));
             const points = await service.activities.parseGeoJsonToPoints(id);
             const json = {
                 points: points.map(point => [point[0], point[1]])
             }
-            await Deno.writeTextFile(`./data/export/heatmap/${id}.json`, JSON.stringify(json));
+            await Deno.writeTextFile(`./data/${filename}/heatmap/${id}.json`, JSON.stringify(json));
         }
     }
 
@@ -66,7 +64,11 @@ export const handler: Handlers<Props> = {
         const reader = file.stream().getReader();
         const result = await reader.read();
 
-        const exportZipFile = `./data/${'export'}.zip`
+        const exportFilename = (ctx.state?.data as any)?.uid ?? 'export';
+
+        const strava = new StravaDataService(exportFilename)
+
+        const exportZipFile = `./data/${exportFilename}.zip`
 
         if (result.value) {
             if (await fileExists(exportZipFile)) {
@@ -74,8 +76,8 @@ export const handler: Handlers<Props> = {
             }
             await Deno.writeFile(exportZipFile, result.value);
             
-            await extractExportFile();
-            await extractActivities();
+            await extractExportFile(exportFilename);
+            await extractActivities(exportFilename, service);
 
 
             if (await fileExists(exportZipFile)) {

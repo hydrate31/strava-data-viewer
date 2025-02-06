@@ -1,28 +1,30 @@
-import profile from "../strava.export-data-reader/profile.ts";
+import reader from "../strava.export-data-reader/index.ts";
+
+const folder = 'export';
 
 export default {
     get: async () => {
-        return await profile.get();
+        return await reader(folder).profile.get();
     },
     getMedia: async () => {
-        return await profile.getMedia();
+        return await reader(folder).profile.getMedia();
     },
     getGlobalChallenges: async () => {
-        return await profile.getGlobalChallenges();
+        return await reader(folder).profile.getGlobalChallenges();
     },
     getGroupChallenges: async () => {
-        return await profile.getGroupChallenges();
+        return await reader(folder).profile.getGroupChallenges();
     },
     getGoals: async () => {
-        return await profile.getGoals();
+        return await reader(folder).profile.getGoals();
     },
     getFollowers: async () => {
-        return await profile.getFollowers();
+        return await reader(folder).profile.getFollowers();
     },
     getFollowing: async () => {
-        return await profile.getFollowing();
+        return await reader(folder).profile.getFollowing();
     },
     getClubs: async () => {
-        return await profile.getClubs();
+        return await reader(folder).profile.getClubs();
     }
 }

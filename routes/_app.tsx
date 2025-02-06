@@ -18,6 +18,13 @@ export default function App({ Component, url }: PageProps, ctx: any) {
               <li selected={url.pathname.startsWith('/heatmap') ? true : undefined}>
                 <a href="/heatmap">Heatmap</a>
               </li>
+
+              {url.pathname.startsWith('/training/activities/') && <li selected>
+                <a href="/profile/activities">Activity</a>
+              </li>}
+              {url.pathname.startsWith('/upload') && <li selected>
+                <a href="/upload">Upload</a>
+              </li>}
           </nav>
         </header>
         <main>

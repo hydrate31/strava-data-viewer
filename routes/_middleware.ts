@@ -1,8 +1,12 @@
 import { FreshContext } from "$fresh/server.ts";
 import { fileExists } from "../packages/strava.export-data-reader/helpers/fileExists.ts";
 
-interface State {
+import authConfig from '../config.ts';
+import { getSessionId } from "../helpers/oauth.ts";
 
+interface State {
+    sessionId: string;
+    data: any;
 }
 
 export async function handler(
@@ -16,6 +20,19 @@ export async function handler(
     if (req.method == "GET" && pathname !== "/upload" && !pathname.includes(".") && !await fileExists("./data/export/profile.csv")) {
         return Response.redirect(fullUrl + "/upload")
     }
+
+    if (authConfig.oauth.use == true) {
+        const kv = await Deno.openKv('./data/kv');
+        ctx.state.sessionId = await getSessionId(req) as string;
+        if (ctx.state.sessionId) {
+            const details = await kv.get([ctx.state.sessionId]);
+            ctx.state.data = { ...details.value as any }
+        }
+        else if (!pathname.startsWith('/api/oauth')) {
+            return Response.redirect(fullUrl + "/api/oauth/signin")
+        }
+    }
+
 
     if (pathname == '/') {
         return new Response(null, {

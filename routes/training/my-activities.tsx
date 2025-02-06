@@ -1,16 +1,18 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 
-import dayjs from "npm:dayjs";
+import { IActivity } from "../../packages/strava.export-data-reader/interface/activity.ts";
 
 interface Props {
-    activities: Awaited<ReturnType<typeof service.activities.list>>
+    activities:IActivity[]
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const activities = await service.activities.list();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+        const activities = await strava.activities.list();
 
         return ctx.render({ activities });
     },

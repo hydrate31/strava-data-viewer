@@ -1,16 +1,22 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../../packages/strava.data.service/index.ts";
+import { IActivity } from "../../../packages/strava.export-data-reader/interface/activity.ts";
+import { IProfile } from "../../../packages/strava.export-data-reader/interface/profile.ts";
 
 type Props = {
     mapData: string
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-} & Awaited<ReturnType<typeof service.activities.get>>
+    profile: IProfile
+    activity: IActivity
+}
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const { activity, geoJson } = await service.activities.get(ctx.params.slug);
-                const profile = await service.profile.get();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const { activity, geoJson } = await strava.activities.get(ctx.params.slug);
+        const profile = await strava.profile.get();
 
         const mapData = `
             // Creating map options
@@ -27,8 +33,6 @@ export const handler: Handlers<Props> = {
             
             // Adding layer to the map
             map.addLayer(layer);
-            console.log({ ...L })
-
 
             var jsonLayer = L.geoJson(${geoJson}, {
                 style: function (feature) {

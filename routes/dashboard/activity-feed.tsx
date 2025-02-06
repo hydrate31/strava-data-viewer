@@ -1,6 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 
 interface Activities {
     activities: any[]
@@ -8,7 +8,10 @@ interface Activities {
   
 export const handler: Handlers<Activities> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const activities = await service.activities.list();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const activities = await strava.activities.list();
 
         return ctx.render({ activities });
     },

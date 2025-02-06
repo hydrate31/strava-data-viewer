@@ -1,13 +1,15 @@
-import gear from "../strava.export-data-reader/gear.ts";
+import reader from "../strava.export-data-reader/index.ts";
+
+const folder = 'export';
 
 export default {
     bikes: async () => {
-        return await gear.getBikes();
+        return await reader(folder).gear.getBikes();
     },
     components: async () => {
-        return await gear.getComponents();
+        return await reader(folder).gear.getComponents();
     },
     shoes: async () => {
-        return await gear.getShoes();
+        return await reader(folder).gear.getShoes();
     },
 }

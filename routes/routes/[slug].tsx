@@ -1,19 +1,22 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IRoute } from "../../packages/strava.export-data-reader/interface/route.ts";
 
 type Props = {
     mapData: string
-} & {
-    routes: Awaited<ReturnType<typeof service.routes.list>>
-    route: Awaited<ReturnType<typeof service.routes.list>>[0]
+    routes: IRoute[]
+    route: IRoute
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const routes = await service.routes.list();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const routes = await strava.routes.list();
         const route = routes.filter(r => r.filename == `routes/${ctx.params.slug}.gpx`)[0];
-        const geoJson = await service.routes.getGeoJson(route.filename)
+        const geoJson = await strava.routes.getGeoJson(route.filename)
 
         const mapData = `
             // Creating map options
@@ -30,8 +33,6 @@ export const handler: Handlers<Props> = {
             
             // Adding layer to the map
             map.addLayer(layer);
-            console.log({ ...L })
-
 
             var jsonLayer = L.geoJson(${geoJson}, {
                 style: function (feature) {

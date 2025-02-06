@@ -7,9 +7,7 @@ import { DOMParser } from "npm:xmldom"
 import { fileExists } from "./helpers/fileExists.ts";
 import { parseFitFile } from "./helpers/parseFitFile.ts";
 
-
-
-export default {
+export default (folder: string) => ({
     get: async (): Promise<IActivity[]> => {
         const data = await Deno.readTextFile("./data/export/activities.csv");
         const activities: IActivity[] = parse(data, {
@@ -61,7 +59,7 @@ export default {
             const gpxData = await Deno.readTextFile(`./data/export/activities/${id}.gpx`);
             const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
             geojson = gpx(gpxXml);
-            const coordinates = geojson.features[0].geometry.coordinates
+            const coordinates = (geojson.features[0].geometry as any).coordinates
             return coordinates;
         }
 
@@ -82,4 +80,4 @@ export default {
             return []
         }
     }
-}
+})

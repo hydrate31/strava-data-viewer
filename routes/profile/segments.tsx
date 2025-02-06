@@ -1,20 +1,27 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import { IGoal } from "../../packages/strava.export-data-reader/interface/goal.ts";
+import { ISegment } from "../../packages/strava.export-data-reader/interface/segment.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    goals: Awaited<ReturnType<typeof service.profile.getGoals>>,
-    segments: Awaited<ReturnType<typeof service.segments.list>>,
+    profile: IProfile
+    media: IMedia[]
+    goals: IGoal[]
+    segments: ISegment[]
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const goals = await service.profile.getGoals();
-        const segments = await service.segments.list();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+    
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        const goals = await strava.profile.getGoals();
+        const segments = await strava.segments.list();
 
         return ctx.render({
             profile,

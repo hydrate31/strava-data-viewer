@@ -9,7 +9,7 @@ import { IShoe } from "./interface/shoe.ts";
 
 
 
-export default {
+export default (folder: string) => ({
     getBikes: async (): Promise<IBike[]> => {
         const data = await Deno.readTextFile("./data/export/bikes.csv");
         const component: IBike[] = parse(data, {
@@ -51,4 +51,4 @@ export default {
 
         return shoes;
     },
-}
+})

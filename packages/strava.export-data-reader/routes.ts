@@ -5,7 +5,7 @@ import { IRoute } from "./interface/route.ts";
 import { gpx } from "npm:@tmcw/togeojson"
 import { DOMParser } from "npm:xmldom"
 
-export default {
+export default (folder: string) => ({
     get: async (): Promise<IRoute[]> => {
         const data = await Deno.readTextFile("./data/export/routes.csv");
         const routes: IRoute[] = parse(data, {
@@ -27,4 +27,4 @@ export default {
         return JSON.stringify(geojson);
         
     }
-}
+})

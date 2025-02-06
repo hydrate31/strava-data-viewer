@@ -1,14 +1,15 @@
-import activities from "../strava.export-data-reader/activities.ts";
+import reader from "../strava.export-data-reader/index.ts";
 
+const folder = 'export';
 export default {
     list: async () => {
-        return await activities.get();
+        return await reader(folder).activities.get();
     },
     get: async (id: string) => {
-        const items = await activities.get();
+        const items = await reader(folder).activities.get();
         return {
             activity: items.filter((i) => i.activity_id === id)[0],
-            geoJson: await activities.getGeoJson(id),
+            geoJson: await reader(folder).activities.getGeoJson(id),
         }
     },
     listHeatmap: async () => {
@@ -21,6 +22,6 @@ export default {
         }
         return entries
     },
-    getGeoJson: async (id: string) => await activities.getGeoJson(id),
-    parseGeoJsonToPoints: async (id: string) => await activities.parseGeoJsonToPoints(id),
+    getGeoJson: async (id: string) => await reader(folder).activities.getGeoJson(id),
+    parseGeoJsonToPoints: async (id: string) => await reader(folder).activities.parseGeoJsonToPoints(id),
 }

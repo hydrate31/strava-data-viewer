@@ -1,22 +1,32 @@
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    clubs: Awaited<ReturnType<typeof service.profile.getClubs>>
+    profile: IProfile
+    media: IMedia[]
+    clubs: IClub[]
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const clubs = await service.profile.getClubs();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        const followers = await strava.profile.getFollowers();
+        const following = await strava.profile.getFollowing();
+        const clubs = await strava.profile.getClubs();
 
         return ctx.render({
             profile,
             media,
-            clubs,
+            followers,
+            following,
+            clubs
         });
     },
 };

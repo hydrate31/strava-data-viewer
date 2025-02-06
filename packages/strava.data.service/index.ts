@@ -2,25 +2,35 @@ import activities from "./activities.ts";
 import gear from "./gear.ts";
 import profile from "./profile.ts";
 
-import routes from "../strava.export-data-reader/routes.ts";
-import segments from "../strava.export-data-reader/segments.ts";
+import reader from "../strava.export-data-reader/index.ts";
 
-export default {
-    activities,
-    gear,
-    profile,
-    routes: {
+
+export class StravaDataService {
+    folder: string = "export";
+    reader: ReturnType<typeof reader>
+
+    constructor(folder?: string) {
+        if (folder) {
+            this.folder = folder;
+        }
+        this.reader = reader(this.folder);
+    }
+
+    activities = activities;
+    gear = gear;
+    profile = profile;
+    routes = {
         list: async () => {
-            return await routes.get();
+            return await this.reader.routes.get();
         },
 
         getGeoJson: async (file: string) => {
-            return await routes.getGeoJson(file);
+            return await this.reader.routes.getGeoJson(file);
         },
-    },
-    segments: {
+    };
+    segments = {
         list: async () => {
-            return await segments.get();
+            return await this.reader.segments.get();
         },
-    }
+    };
 }

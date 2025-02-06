@@ -1,7 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import { CHAR_0 } from "$std/path/_common/constants.ts";
-import service from "../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../packages/strava.data.service/index.ts";
 
 type Props = {
     mapData: string
@@ -9,7 +8,9 @@ type Props = {
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const heatmaps = await service.activities.listHeatmap();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+        const heatmaps = await strava.activities.listHeatmap();
 
         const mapData = `
             // Creating map options

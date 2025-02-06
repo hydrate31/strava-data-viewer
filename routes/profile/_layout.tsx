@@ -1,22 +1,29 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import service from "../../packages/strava.data.service/index.ts";
+import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IFollow } from "../../packages/strava.export-data-reader/interface/follow.ts";
+import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
+import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 
 interface Props {
-    profile: Awaited<ReturnType<typeof service.profile.get>>
-    media: Awaited<ReturnType<typeof service.profile.getMedia>>
-    followers: Awaited<ReturnType<typeof service.profile.getFollowers>>
-    following: Awaited<ReturnType<typeof service.profile.getFollowing>>
-    clubs: Awaited<ReturnType<typeof service.profile.getClubs>>
+    profile: IProfile
+    media: IMedia[]
+    followers: IFollow[]
+    following: IFollow[]
+    clubs: IClub[]
 }
   
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
-        const profile = await service.profile.get();
-        const media = await service.profile.getMedia();
-        const followers = await service.profile.getFollowers();
-        const following = await service.profile.getFollowing();
-        const clubs = await service.profile.getClubs();
+        const folder = (ctx.state?.data as any)?.uid ?? 'export';
+        const strava = new StravaDataService(folder)
+
+        const profile = await strava.profile.get();
+        const media = await strava.profile.getMedia();
+        const followers = await strava.profile.getFollowers();
+        const following = await strava.profile.getFollowing();
+        const clubs = await strava.profile.getClubs();
 
         return ctx.render({
             profile,
@@ -27,7 +34,7 @@ export const handler: Handlers<Props> = {
         });
     },
 };
-export default function Layout({ Component, state, data, url }: PageProps, ctx) {
+export default function Layout({ Component, state, data, url }: PageProps<Props>) {
     
     // do something with state here
     return <>
@@ -94,9 +101,8 @@ export default function Layout({ Component, state, data, url }: PageProps, ctx) 
                         <button class="primary" onClick={"window.location.href = '/heatmap'"}>View Heatmap</button>
                     </li>
                     { state?.sessionId && <li>
-                        <button onClick={"window.location.href = '/api/oauth/logout'"}>Logout</button>
+                        <button onClick={"window.location.href = '/api/oauth/signout'"}>Logout</button>
                     </li> }
-                    
                 </ul>
             </nav>
 
