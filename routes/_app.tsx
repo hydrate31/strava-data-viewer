@@ -1,5 +1,7 @@
 import { type PageProps } from "$fresh/server.ts";
+
 export default function App({ Component, url }: PageProps, ctx: any) {
+
   return (
     <html>
       <head>
@@ -15,7 +17,7 @@ export default function App({ Component, url }: PageProps, ctx: any) {
               <li selected={url.pathname.startsWith('/profile') ? true : undefined}>
                 <a href="/profile">Profile</a>
               </li>
-              <li selected={url.pathname.startsWith('/heatmap') ? true : undefined}>
+              <li selected={url.pathname.startsWith('/heatmap') ? true : undefined} >
                 <a href="/heatmap">Heatmap</a>
               </li>
 

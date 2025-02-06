@@ -2,11 +2,12 @@ import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../packages/strava.data.service/index.ts";
 import {
-    compress,
     decompress
 } from "https://deno.land/x/zip@v1.2.5/mod.ts";
-import compressing from "npm:compressing";
 import { fileExists } from "../packages/strava.export-data-reader/helpers/fileExists.ts";
+import sdevTasks from "../packages/sdev.tasks/index.ts";
+import { QueueEntry } from "../packages/sdev.tasks/interfaces/queue-entry.ts";
+import { TaskType } from "../packages/sdev.tasks/interfaces/task-type.ts";
 
 interface Props {
     message: string | null;
@@ -24,32 +25,6 @@ const extractExportFile = async (filename: string) => {
     catch {}
 }
 
-const extractActivities = async (filename: string, service: StravaDataService) => {
-    const activitiesDir = `./data/${filename}/activities`;
-    for await (const dirEntry of Deno.readDir(activitiesDir)) {
-        if (dirEntry.name.endsWith(".gz")) {
-            await compressing.gzip.uncompress(`${activitiesDir}/${dirEntry.name}`, `${activitiesDir}/${dirEntry.name.replace('.gz', '')}`)
-            await Deno.remove(`${activitiesDir}/${dirEntry.name}`)
-            console.log(` ${activitiesDir}/${dirEntry.name}`)
-        }
-    }
-    console.log('Generating Heatmap')
-    await Deno.mkdir(`./data/${filename}/heatmap/`)
-    for await (const dirEntry of Deno.readDir(activitiesDir)) {
-        if (dirEntry.name.endsWith(".gpx")) {
-            const id  = dirEntry.name.replace(".gpx", "")
-            const { activity, geoJson } = await service.activities.get(dirEntry.name.replace(".gpx", ""));
-            const points = await service.activities.parseGeoJsonToPoints(id);
-            const json = {
-                points: points.map(point => [point[0], point[1]])
-            }
-            await Deno.writeTextFile(`./data/${filename}/heatmap/${id}.json`, JSON.stringify(json));
-            console.log(` ./data/${filename}/heatmap/${id}.json`)
-        }
-    }
-
-}
-  
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
         return ctx.render({ });
@@ -80,9 +55,22 @@ export const handler: Handlers<Props> = {
             console.info(' ------------ Extracting export archive ------------')
             await extractExportFile(exportFilename);
             console.info(' ------------ Finished: Extracting export archive ------------')
-            console.info(' ------------ Extracting activities ------------')
-            await extractActivities(exportFilename, strava);
-            console.info(' ------------ Finished: Extracting activities ------------')
+
+            if (await sdevTasks.status(TaskType.ProcessActivities, exportFilename) !== "running") {
+                sdevTasks.enqueue({
+                    userId: exportFilename,
+                    type: TaskType.ProcessActivities,
+                    body: "Extract gzipped activities."
+                } as QueueEntry);
+            }
+
+            if (await sdevTasks.status(TaskType.GenerateHeatmap, exportFilename) !== "running") {
+                sdevTasks.enqueue({
+                    userId: exportFilename,
+                    type: TaskType.GenerateHeatmap,
+                    body: "Generating heatmap from activities."
+                } as QueueEntry);
+            }
 
 
             console.info(' ------------ Cleanup ------------')
