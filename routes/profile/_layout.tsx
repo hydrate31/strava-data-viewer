@@ -21,6 +21,7 @@ export default async function Layout(req: Request, ctx: FreshContext) {
     const url = req.url;
     const folder = (ctx.state?.data as any)?.uid ?? 'export';
     const heatmapStatus = await sdevTasks.status(TaskType.GenerateHeatmap, folder);
+    const activityStatus = await sdevTasks.status(TaskType.ProcessActivities, folder);
 
     const strava = new StravaDataService(folder);
 
@@ -62,7 +63,7 @@ export default async function Layout(req: Request, ctx: FreshContext) {
                     </li>
                     <li role="tab" selected={pathname == '/profile/activities' ? true : undefined}>
                         <a href="/profile/activities">
-                            Activities
+                            Activities {activityStatus  == "running" ? ": Processing" : ""}
                         </a>
                     </li>
                     <li role="tab" selected={pathname == '/profile/followers' ? true : undefined}>
@@ -92,7 +93,7 @@ export default async function Layout(req: Request, ctx: FreshContext) {
                     </li>
                     <li>
                         <button class="primary" onClick={"window.location.href = '/heatmap'"}>
-                        View Heatmap: {heatmapStatus}
+                        View Heatmap {heatmapStatus  == "running" ? ": Processing" : ""}
                     </button>
                     </li>
                     { ctx.state?.sessionId && <li>
