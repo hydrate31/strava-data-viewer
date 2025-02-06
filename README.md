@@ -8,7 +8,7 @@ The Deno runtime must be installed. Please see installation instructions:
 https://deno.land/manual/getting_started/installation
 
 ### Env Files
-The env file is extremely important. Without it this will not function.
+The env file is extremely important. Without it this will not function. If you decide to enable oauth with USE_OPENID please be sure to appropriately fill out the other environment variables.
 
 ### Usage
 
