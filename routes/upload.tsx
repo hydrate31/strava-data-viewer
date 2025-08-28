@@ -64,6 +64,12 @@ export const handler: Handlers<Props> = {
                 } as QueueEntry);
             }
 
+            sdevTasks.enqueue({
+                userId: exportFilename,
+                type: TaskType.ProcessAthletes,
+                body: "Fetching athelete information..."
+            } as QueueEntry);
+
             console.info(' ------------ Cleanup ------------')
             if (await fileExists(exportZipFile)) {
                 await Deno.remove(exportZipFile)

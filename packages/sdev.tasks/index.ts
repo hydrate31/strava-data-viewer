@@ -4,6 +4,7 @@ import { TaskType } from "./interfaces/task-type.ts";
 import { StravaDataService } from "../strava.data.service/index.ts";
 import { heatmap } from "./tasks/generate-heatmap.ts";
 import { activities } from "./tasks/process-activities.ts";
+import { athletes } from "./tasks/process-athletes.ts";
 
   
 const tasks = await Deno.openKv('./data/tasks');
@@ -34,6 +35,11 @@ tasks.listenQueue(async (entry: QueueEntry) => {
         case TaskType.GenerateHeatmap:
             tasks.set([`${entry.type}:${entry.userId}`], 'running');
             await heatmap.generate(entry.userId, strava);
+            tasks.set([`${entry.type}:${entry.userId}`], 'stopped');
+            break;
+        case TaskType.ProcessAthletes:
+            tasks.set([`${entry.type}:${entry.userId}`], 'running');
+            await athletes.process(entry.userId, strava);
             tasks.set([`${entry.type}:${entry.userId}`], 'stopped');
             break;
     }

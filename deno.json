@@ -22,6 +22,7 @@
   ],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.56",
     "@fakoua/zip-ts": "jsr:@fakoua/zip-ts@^1.3.1",
     "@std/csv": "jsr:@std/csv@^1.0.4",
     "preact": "https://esm.sh/preact@10.22.0",

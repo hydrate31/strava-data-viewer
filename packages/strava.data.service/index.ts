@@ -1,4 +1,5 @@
 import activities from "./activities.ts";
+import athletes from "./athletes.ts";
 import gear from "./gear.ts";
 import profile from "./profile.ts";
 
@@ -17,6 +18,7 @@ export class StravaDataService {
     }
 
     activities = activities;
+    athletes = athletes;
     gear = gear;
     profile = profile;
     routes = {
