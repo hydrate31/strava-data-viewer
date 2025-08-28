@@ -90,7 +90,7 @@ export const Followers = (props: PageProps<Props>) => <>
             <tbody>
                 {props.data.following.map((follow: any) => <tr>
                     <td>
-                        <img src={props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.avatarUrl} style="height: 1em; width: 1em; vertical align-bottom;" />
+                        <img src={props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.avatarUrl} style="height: 1em; width: 1em; vertical align-bottom; margin-right: 0.5em;" />
                         <a href={`https://www.strava.com/athletes/${follow.athelete_id}`}>{
                             props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.name ?? follow.athelete_id
                         }</a>
@@ -115,7 +115,7 @@ export const Followers = (props: PageProps<Props>) => <>
             <tbody>
                 {props.data.followers.map((follow: any) => <tr>
                     <td>
-                        <img src={props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.avatarUrl} style="height: 1em; width: 1em; vertical align-bottom;" />
+                        <img src={props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.avatarUrl} style="height: 1em; width: 1em; vertical align-bottom; margin-right: 0.5em;" />
                         <a href={`https://www.strava.com/athletes/${follow.athelete_id}`}>{
                             props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.name ?? follow.athelete_id
                         }</a>
