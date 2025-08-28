@@ -60,8 +60,8 @@ const time = {
 export const Route = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>{data.route.name}</title>
-        <link rel="stylesheet" href={asset("leaflet/leaflet.css")} />
-        <script src={asset("leaflet/leaflet.js")}></script>
+        <link rel="stylesheet" href={asset("/leaflet/leaflet.css")} />
+        <script src={asset("/leaflet/leaflet.js")}></script>
     </Head>
     <h2>{data.route.name}</h2>
 

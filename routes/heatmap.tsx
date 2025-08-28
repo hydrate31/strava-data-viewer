@@ -53,8 +53,8 @@ const time = {
 export const Heatmap = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>Heatmap</title>
-        <link rel="stylesheet" href={asset("leaflet/leaflet.css")} />
-        <script src={asset("leaflet/leaflet.js")}></script>
+        <link rel="stylesheet" href={asset("/leaflet/leaflet.css")} />
+        <script src={asset("/leaflet/leaflet.js")}></script>
     </Head>
 
     <section class="breakout">

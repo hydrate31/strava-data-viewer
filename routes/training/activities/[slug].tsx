@@ -61,8 +61,8 @@ const UnitDisplay = ({ value, unit, description }: { value: string, unit: string
 export const Activity = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>{data.activity.activity_name}</title>
-        <link rel="stylesheet" href={asset("leaflet/leaflet.css")} />
-        <script src={asset("leaflet/leaflet.js")}></script>
+        <link rel="stylesheet" href={asset("/leaflet/leaflet.css")} />
+        <script src={asset("/leaflet/leaflet.js")}></script>
     </Head>
     <details open>
         <summary>
