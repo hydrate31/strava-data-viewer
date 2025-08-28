@@ -1,4 +1,4 @@
-import { Head } from "$fresh/runtime.ts";
+import { asset, Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../../../packages/strava.data.service/index.ts";
 import { IActivity } from "../../../packages/strava.export-data-reader/interface/activity.ts";
@@ -61,8 +61,8 @@ const UnitDisplay = ({ value, unit, description }: { value: string, unit: string
 export const Activity = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>{data.activity.activity_name}</title>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <link rel="stylesheet" href={asset("leaflet/leaflet.css")} />
+        <script src={asset("leaflet/leaflet.js")}></script>
     </Head>
     <details open>
         <summary>
