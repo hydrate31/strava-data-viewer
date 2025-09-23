@@ -14,13 +14,39 @@ export default {
     },
     listHeatmap: async () => {
         const entries = []
-        for await (const dirEntry of Deno.readDir(`./data/export/heatmap/`)) {
+        for await (const dirEntry of Deno.readDir(`./data/${folder}/heatmap/`)) {
             if (dirEntry.isFile) {
-                const json = JSON.parse(await Deno.readTextFile(`./data/export/heatmap/${dirEntry.name}`));
+                const json = JSON.parse(await Deno.readTextFile(`./data/${folder}/heatmap/${dirEntry.name}`));
                 entries.push(json.points);
             }
         }
         return entries
+    },
+    cacheHeatmap: async (heatmaps: any) => {
+         const heatmapPoints = {
+            type: "FeatureCollection",
+            features: heatmaps.map((entry: any) => ({
+                type: "Feature",
+                geometry: {
+                    type: "LineString",
+                    coordinates: entry
+                },
+                properties: {}
+            }))
+        };
+
+        await Deno.writeTextFile(`./data/${folder}/heatmap/heatmap.json`, JSON.stringify(heatmapPoints))
+    },
+    fetchHeatmapCache: async () => {
+        try {
+            const text = await Deno.readTextFile(`./data/${folder}/heatmap/heatmap.json`);
+            const json = JSON.parse(text);
+
+            return json;
+        }
+        catch {
+            return {}
+        }
     },
     getGeoJson: async (id: string) => await reader(folder).activities.getGeoJson(id),
     parseGeoJsonToPoints: async (id: string) => await reader(folder).activities.parseGeoJsonToPoints(id),

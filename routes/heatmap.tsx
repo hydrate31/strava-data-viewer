@@ -1,63 +1,36 @@
 import { asset, Head } from "$fresh/runtime.ts";
-import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
+import { FreshContext, Handlers, PageProps } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../packages/strava.data.service/index.ts";
 
 type Props = {
-    mapData: string
-}
-  
+  mapData: string;
+};
+
 export const handler: Handlers<Props> = {
-    async GET(_req: Request, ctx: FreshContext) {
-        const folder = (ctx.state?.data as any)?.uid ?? 'export';
-        const strava = new StravaDataService(folder)
-        let heatmaps = await strava.activities.listHeatmap();
+  async GET(_req: Request, ctx: FreshContext) {
+    const folder = (ctx.state?.data as any)?.uid ?? "export";
+    const strava = new StravaDataService(folder);
+    const source = await strava.activities.fetchHeatmapCache();
 
-        const heatmapPoints = {
-            type: "FeatureCollection",
-            features: heatmaps.flatMap((line) =>
-                line.map((coord: any) => ({
-                    type: "Feature",
-                    geometry: {
-                        type: "Point",
-                        coordinates: coord
-                    },
-                    properties: {}
-                }))
-            )
-        };
+    // Extract first coordinate from the first feature
+    let firstCoord;
+    const firstFeature = source.features?.[0];
+    if (firstFeature) {
+      const geom = firstFeature.geometry;
+      if (geom.type === "Point") {
+        firstCoord = geom.coordinates;
+      } else if (geom.type === "LineString" || geom.type === "MultiPoint") {
+        firstCoord = geom.coordinates[0];
+      } else if (geom.type === "Polygon" || geom.type === "MultiLineString") {
+        firstCoord = geom.coordinates[0][0];
+      } else if (geom.type === "MultiPolygon") {
+        firstCoord = geom.coordinates[0][0][0];
+      }
+    }
 
-        const source = {
-            type: "FeatureCollection",
-            features: heatmaps.map((entry) => ({
-                type: "Feature",
-                geometry: {
-                    type: "LineString",
-                    coordinates: entry
-                },
-                properties: {}
-            }))
-        };
+    const sourceString = JSON.stringify(source);
 
-
-        // Extract first coordinate from the first feature
-        let firstCoord;
-        const firstFeature = source.features?.[0];
-        if (firstFeature) {
-            const geom = firstFeature.geometry;
-            if (geom.type === 'Point') {
-                firstCoord = geom.coordinates;
-            } else if (geom.type === 'LineString' || geom.type === 'MultiPoint') {
-                firstCoord = geom.coordinates[0];
-            } else if (geom.type === 'Polygon' || geom.type === 'MultiLineString') {
-                firstCoord = geom.coordinates[0][0];
-            } else if (geom.type === 'MultiPolygon') {
-                firstCoord = geom.coordinates[0][0][0];
-            }
-        }
-
-        const sourceString = JSON.stringify(source)
-
-        const mapData = `
+    const mapData = `
             const source = ${sourceString};
             // Initialize the map centered on the first coordinate
             const map = new maplibregl.Map({
@@ -117,30 +90,39 @@ export const handler: Handlers<Props> = {
                 });
                 map.fitBounds(bounds, { padding: 20 });
             });
-        `
+        `;
 
-        return ctx.render({ mapData });
-    },
+    return ctx.render({ mapData });
+  },
 };
 
 const time = {
-    getSeconds: (seconds: number) => seconds % 60,
-    getMinutes: (seconds: number) => Math.floor(seconds / 60) % 60,
-    getHours: (seconds: number) => Math.floor(Math.floor(seconds / 60) / 60),
-}
+  getSeconds: (seconds: number) => seconds % 60,
+  getMinutes: (seconds: number) => Math.floor(seconds / 60) % 60,
+  getHours: (seconds: number) => Math.floor(Math.floor(seconds / 60) / 60),
+};
 
-
-export const Heatmap = ({ data }: PageProps<Props>) => <>
+export const Heatmap = ({ data }: PageProps<Props>) => (
+  <>
     <Head>
-        <title>Heatmap</title>
-        <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
-        <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+      <title>Heatmap</title>
+      <link
+        href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+        rel="stylesheet"
+      />
+      <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js">
+      </script>
     </Head>
 
     <section class="breakout">
-        <div id="map" style="width: 100%; height: calc(100vh - 56px); display: inline-block;"></div>
-        <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
+      <div
+        id="map"
+        style="width: 100%; height: calc(100vh - 56px); display: inline-block;"
+      >
+      </div>
+      <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
     </section>
-</>
+  </>
+);
 
-export default Heatmap
+export default Heatmap;

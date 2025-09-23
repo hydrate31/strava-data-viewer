@@ -1,7 +1,6 @@
 import colors from "npm:colors";
 
 import { StravaDataService } from "../../strava.data.service/index.ts";
-import { fileExists } from "../../strava.export-data-reader/helpers/fileExists.ts";
 
 export const heatmap = {
     generate: async (folder: string, strava: StravaDataService) => {
@@ -41,6 +40,9 @@ export const heatmap = {
                 current++;
             }
         }
+
+        const heatmap = await strava.activities.listHeatmap();
+        await strava.activities.cacheHeatmap(heatmap);
     }
 }
 
