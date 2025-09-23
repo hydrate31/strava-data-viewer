@@ -19,27 +19,82 @@ export const handler: Handlers<Props> = {
         const profile = await strava.profile.get();
 
         const mapData = `
-            // Creating map options
-            var mapOptions = {
-                center: [53.9690089, -2.6276908],
-                zoom: 8
-            }
-            
-            // Creating a map object
-            var map = new L.map('map', mapOptions);
-            
-            // Creating a Layer object
-            var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-            
-            // Adding layer to the map
-            map.addLayer(layer);
+            const source = ${geoJson}
 
-            var jsonLayer = L.geoJson(${geoJson}, {
-                style: function (feature) {
-                    return {color: 'blue'};
+            // Extract first coordinate from the first feature
+            let firstCoord;
+            const firstFeature = source.features?.[0];
+            if (firstFeature) {
+                const geom = firstFeature.geometry;
+                if (geom.type === 'Point') {
+                    firstCoord = geom.coordinates;
+                } else if (geom.type === 'LineString' || geom.type === 'MultiPoint') {
+                    firstCoord = geom.coordinates[0];
+                } else if (geom.type === 'Polygon' || geom.type === 'MultiLineString') {
+                    firstCoord = geom.coordinates[0][0];
+                } else if (geom.type === 'MultiPolygon') {
+                    firstCoord = geom.coordinates[0][0][0];
                 }
-            }).addTo(map);
-            map.fitBounds(jsonLayer.getBounds());
+            }
+
+            // Initialize the map centered on the first coordinate
+            const map = new maplibregl.Map({
+                container: 'map',
+                style: {
+                    version: 8,
+                    sources: {
+                        osm: {
+                            type: 'raster',
+                            tiles: [
+                                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                            ],
+                            tileSize: 256
+                        }
+                    },
+                    layers: [
+                        {
+                            id: 'osm-layer',
+                            type: 'raster',
+                            source: 'osm'
+                        }
+                    ]
+                },
+                center: firstCoord || [-2.6276908, 53.9690089], // fallback if no coord found
+                zoom: 8
+            });
+
+            // Add navigation controls
+            map.addControl(new maplibregl.NavigationControl());
+
+
+            // Add GeoJSON layer
+            map.on('load', function () {
+                map.addSource('my-geojson', {
+                    type: 'geojson',
+                    data: source // assuming geoJson is a valid JS object
+                });
+
+                map.addLayer({
+                    id: 'geojson-layer',
+                    type: 'line',
+                    source: 'my-geojson',
+                    paint: {
+                        'line-color': 'blue',
+                        'line-width': 2
+                    }
+                });
+
+                // Fit bounds to GeoJSON
+                const bounds = new maplibregl.LngLatBounds();
+                source.features.forEach(function(feature) {
+                    feature.geometry.coordinates.forEach(function(coord) {
+                        bounds.extend(coord);
+                    });
+                });
+                map.fitBounds(bounds, { padding: 20 });
+            });
         `
 
         return ctx.render({ profile, activity, mapData });
@@ -61,8 +116,8 @@ const UnitDisplay = ({ value, unit, description }: { value: string, unit: string
 export const Activity = ({ data }: PageProps<Props>) => <>
     <Head>
         <title>{data.activity.activity_name}</title>
-        <link rel="stylesheet" href={asset("/leaflet/leaflet.css")} />
-        <script src={asset("/leaflet/leaflet.js")}></script>
+        <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
+        <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
     </Head>
     <details open>
         <summary>
