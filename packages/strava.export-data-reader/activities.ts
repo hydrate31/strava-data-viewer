@@ -35,24 +35,16 @@ export default (folder: string) => ({
             const geojson = gpx(gpxXml);
             return JSON.stringify(geojson);
         }
-
-        const fitFileExists = await fileExists(`./data/export/activities/${id}.fit`);
-        if (gpxFileExists) {
-            const fitData = await Deno.readTextFile(`./data/export/activities/${id}.fit`);
-            if (fitData) {
-                const result = await parseFitFile(fitData);
-                
-                return JSON.stringify('');
-            }
-            else {
-                return ""
-            }
-        }
         else {
             return ""
         }
     },
-    parseGeoJsonToPoints: async (id: string): Promise<number[][]> => {
+    getGeoJsonFromGPX: async (gpxData: string): Promise<any> => {
+        const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
+        const geojson = gpx(gpxXml);
+        return geojson;
+    },
+    parseFileToPoints: async (id: string): Promise<number[][]> => {
         let geojson = null;
         const gpxFileExists = await fileExists(`./data/export/activities/${id}.gpx`);
         if (gpxFileExists) {
@@ -62,22 +54,21 @@ export default (folder: string) => ({
             const coordinates = (geojson.features[0].geometry as any).coordinates
             return coordinates;
         }
-
-        const fitFileExists = await fileExists(`./data/export/activities/${id}.fit`);
-        if (gpxFileExists) {
-            const fitData = await Deno.readTextFile(`./data/export/activities/${id}.fit`);
-            if (fitData) {
-                const result = await parseFitFile(fitData);
-                
-                geojson = result;
-                return []
-            }
-            else {
-                return []
-            }
-        }
         else {
             return []
         }
+    },
+
+    parseGPXToPoints: async (gpxData: string): Promise<number[][]> => {
+        let geojson = null;
+        const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
+        geojson = gpx(gpxXml);
+        const coordinates = (geojson.features[0].geometry as any).coordinates
+        return coordinates;
+    },
+
+    parseGeoJsonToPoints: async (geojson: any): Promise<number[][]> => {
+        const coordinates = (geojson.features[0].geometry as any).coordinates
+        return coordinates;
     }
 })

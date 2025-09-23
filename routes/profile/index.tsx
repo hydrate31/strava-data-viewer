@@ -1,8 +1,11 @@
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
+import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts";
+import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import sdevTasks from "../../packages/sdev.tasks/index.ts";
 
 interface Props {
     profile: IProfile
@@ -29,6 +32,27 @@ export const handler: Handlers<Props> = {
             clubs
         });
     },
+
+    async POST(_req: Request, ctx: FreshContext) {
+        const exportFilename = (ctx.state?.data as any)?.uid ?? 'export';
+        console.log("POST: Profile")
+
+        await sdevTasks.nullify({
+            userId: exportFilename,
+            type: TaskType.GenerateHeatmap,
+            body: "Nullifying  heatmap."
+        } as QueueEntry);
+
+        sdevTasks.enqueue({
+            userId: exportFilename,
+            type: TaskType.GenerateHeatmap,
+            body: "Generating new heatmap."
+        } as QueueEntry);
+
+        const { pathname } = new URL(_req.url);
+        const fullUrl = _req.url.replace(pathname, "")
+        return Response.redirect(fullUrl + "/profile")
+    }
 };
 
 export const Overview = (props: PageProps<Props>) => <>
@@ -52,6 +76,11 @@ export const Overview = (props: PageProps<Props>) => <>
             Health Consent Status (given on {props.data.profile.date_of_health_consent_status})
         </label>
     </form> */}
+    <section>
+        <form method="post" encType="multipart/form-data">
+            <button type="submit">Regenerate Heatmap</button>
+        </form>
+    </section>
 
     <section>
         { props.data.clubs.length && <>

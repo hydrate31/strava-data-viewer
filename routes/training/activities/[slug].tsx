@@ -1,6 +1,7 @@
 import { asset, Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../../../packages/strava.data.service/index.ts";
+import { GeoJsonManipulator } from "../../../packages/strava.export-data-reader/helpers/geoJsonManipulator.ts";
 import { IActivity } from "../../../packages/strava.export-data-reader/interface/activity.ts";
 import { IProfile } from "../../../packages/strava.export-data-reader/interface/profile.ts";
 
@@ -9,7 +10,7 @@ type Props = {
     profile: IProfile
     activity: IActivity
 }
-  
+
 export const handler: Handlers<Props> = {
     async GET(_req: Request, ctx: FreshContext) {
         const folder = (ctx.state?.data as any)?.uid ?? 'export';
@@ -18,8 +19,51 @@ export const handler: Handlers<Props> = {
         const { activity, geoJson } = await strava.activities.get(ctx.params.slug);
         const profile = await strava.profile.get();
 
+        let pointMap: [number, number][] = [];
+
+        let pointCount = 0;
+
+        function countPoints(geometry: any): number {
+            switch (geometry.type) {
+                case "Point":
+                return 1;
+                case "MultiPoint":
+                return geometry.coordinates.length;
+                case "LineString":
+                return geometry.coordinates.length;
+                case "MultiLineString":
+                return geometry.coordinates.flat().length;
+                case "Polygon":
+                return geometry.coordinates.flat().length;
+                case "MultiPolygon":
+                return geometry.coordinates.flat(2).length;
+                case "GeometryCollection":
+                return geometry.geometries.reduce((sum: number, g: any) => sum + countPoints(g), 0);
+                default:
+                return 0;
+            }
+        }
+
+        for (const feature of JSON.parse(geoJson).features) {
+            pointCount += countPoints(feature.geometry);
+        }
+
+        console.log(`Total number of coordinate points: ${pointCount}`);
+        
+        const manipulator = new GeoJsonManipulator()
+        let source = JSON.parse(geoJson)
+        source = manipulator.simplify(JSON.parse(geoJson), 0.0001);
+        //source = smoothGeoJSON(source, 5)
+        pointCount = 0;
+
+        for (const feature of source.features) {
+            pointCount += countPoints(feature.geometry);
+        }
+
+        console.log(`Total number of coordinate points: ${pointCount}`);
+
         const mapData = `
-            const source = ${geoJson}
+            const source = ${JSON.stringify(source)}
 
             // Extract first coordinate from the first feature
             let firstCoord;

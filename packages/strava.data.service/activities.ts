@@ -47,7 +47,11 @@ export default {
         catch {
             return {}
         }
+        
     },
+    getGeoJsonFromGPX: async (data: string) => await reader(folder).activities.getGeoJsonFromGPX(data),
     getGeoJson: async (id: string) => await reader(folder).activities.getGeoJson(id),
-    parseGeoJsonToPoints: async (id: string) => await reader(folder).activities.parseGeoJsonToPoints(id),
+    parseFileToPoints: async (id: string) => await reader(folder).activities.parseFileToPoints(id),
+    parseGPXToPoints: async (data: string) => await reader(folder).activities.parseGPXToPoints(data),
+    parseGeoJsonToPoints: async (data: any) => await reader(folder).activities.parseGeoJsonToPoints(data),
 }

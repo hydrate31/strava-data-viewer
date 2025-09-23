@@ -84,7 +84,7 @@ export const handler: Handlers<Props> = {
                 // Fit bounds to GeoJSON
                 const bounds = new maplibregl.LngLatBounds();
                 source.features.forEach(function(feature) {
-                    feature.geometry.coordinates.forEach(function(coord) {
+                    feature.geometry.coordinates?.forEach(function(coord) {
                         bounds.extend(coord);
                     });
                 });

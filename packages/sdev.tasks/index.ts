@@ -7,10 +7,21 @@ import { activities } from "./tasks/process-activities.ts";
 import { athletes } from "./tasks/process-athletes.ts";
 
   
-const tasks = await Deno.openKv('./data/tasks');
+const tasks = await Deno.openKv('./data/tasks'); 
 
 export default {
+    nullify: async (entry: QueueEntry) => {
+        await tasks.set([entry.type], 'stopped');
+        await tasks.delete([entry.type.toString(), entry.userId]);
+    },
     enqueue: async (entry: QueueEntry) => {
+        const result = await tasks.get<string>([`${entry.type}:${entry.userId}`]);
+        const running = result?.value ?? "stopped";
+
+        if (running !== "stopped") {
+            console.log('Task already running.');
+            return;
+        }
         console.log(`Queued ${entry.type} for user: ${entry.userId}`);
         tasks.set([entry.type], 'queued');
         await tasks.enqueue(entry, { keysIfUndelivered: [[entry.type.toString(), entry.userId]] });
@@ -26,6 +37,16 @@ tasks.listenQueue(async (entry: QueueEntry) => {
 
     console.log(`Processing ${entry.type} for user: ${entry.userId}`);
     console.log(`  ${entry.body}`);
+
+    const result = await tasks.get<string>([`${entry.type}:${entry.userId}`]);
+    const running = result?.value ?? "stopped";
+
+    if (running !== "stopped") {
+        tasks.delete([entry.type.toString(), entry.userId]);
+        console.log('Ignoring already running task (dont run two at the same time).');
+        return;
+    }
+
     switch (entry.type) {
         case TaskType.ProcessActivities:
             tasks.set([`${entry.type}:${entry.userId}`], 'running');
