@@ -67,8 +67,49 @@ export default (folder: string) => ({
         return coordinates;
     },
 
-    parseGeoJsonToPoints: async (geojson: any): Promise<number[][]> => {
-        const coordinates = (geojson.features[0].geometry as any).coordinates
+    parseGeoJsonToPoints: async (geojson: any): Promise<Set<number[][]>> => {
+        const coordinates: Set<number[][]> = new Set //geojson.features.map((f: any) => f.geometry?.coordinates ?? []);
+        for (const feature of geojson.features) {
+            const geometry = feature.geometry;
+            if (!geometry || !geometry.coordinates) continue;
+
+            switch (geometry.type) {
+            case "Point":
+                coordinates.add(geometry.coordinates);
+                break;
+
+            case "MultiPoint":
+                coordinates.add(geometry.coordinates);
+                break;
+
+            case "LineString":
+                coordinates.add(geometry.coordinates);
+                break;
+
+            case "MultiLineString":
+                for (const line of geometry.coordinates) {
+                    coordinates.add(line);
+                }
+                break;
+
+            case "Polygon":
+                for (const ring of geometry.coordinates) {
+                    coordinates.add(ring);
+                }
+                break;
+
+            case "MultiPolygon":
+                for (const polygon of geometry.coordinates) {
+                    for (const ring of polygon) {
+                        coordinates.add(ring);
+                    }
+                }
+                break;
+
+            default:
+                console.warn(`Unsupported geometry type: ${geometry.type}`);
+            }
+        }
         return coordinates;
     }
 })

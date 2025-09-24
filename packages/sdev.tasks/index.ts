@@ -35,17 +35,16 @@ export default {
 tasks.listenQueue(async (entry: QueueEntry) => {
     const strava = new StravaDataService(entry.userId)
 
-    console.log(`Processing ${entry.type} for user: ${entry.userId}`);
-    console.log(`  ${entry.body}`);
-
     const result = await tasks.get<string>([`${entry.type}:${entry.userId}`]);
     const running = result?.value ?? "stopped";
 
     if (running !== "stopped") {
         tasks.delete([entry.type.toString(), entry.userId]);
-        console.log('Ignoring already running task (dont run two at the same time).');
         return;
     }
+
+    console.log(`Processing ${entry.type} for user: ${entry.userId}`);
+    console.log(`  ${entry.body}`);
 
     switch (entry.type) {
         case TaskType.ProcessActivities:

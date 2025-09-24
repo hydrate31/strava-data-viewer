@@ -7,9 +7,11 @@ export default {
     },
     get: async (id: string) => {
         const items = await reader(folder).activities.get();
+        const activity = items.filter((i) => i.activity_id === id)[0];
+        const filename = activity.filename.replace("activities/", "").replace(".fit", "").replace(".gz", "").replace(".gpx", "");
         return {
-            activity: items.filter((i) => i.activity_id === id)[0],
-            geoJson: await reader(folder).activities.getGeoJson(id),
+            activity,
+            geoJson: await reader(folder).activities.getGeoJson(filename),
         }
     },
     listHeatmap: async () => {
