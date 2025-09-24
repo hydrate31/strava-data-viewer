@@ -40,8 +40,10 @@ export const heatmap = {
             try {
                 const gpxData = await Deno.readTextFile(gpxPath);
                 let geoJSON = await strava.activities.getGeoJsonFromGPX(gpxData);
-                geoJSON = manipulator.clean(geoJSON, 20);
-                geoJSON = manipulator.simplify(geoJSON, 0.0001);
+                geoJSON = manipulator.simplify(geoJSON, 0.0004);
+                for (let i = 0; i < 12; i++) {
+                    geoJSON = manipulator.clean(geoJSON, 3);
+                }
 
                 const pointSet = await strava.activities.parseGeoJsonToPoints(geoJSON);
                     pointSet.forEach(points => {

@@ -52,7 +52,8 @@ export const handler: Handlers<Props> = {
         
         const manipulator = new GeoJsonManipulator()
         let source = JSON.parse(geoJson)
-        //source = smoothGeoJSON(source, 5)
+        source = manipulator.simplify(source, 0.001)
+            source = manipulator.clean(source, 13);
         pointCount = 0;
 
         for (const feature of source.features) {

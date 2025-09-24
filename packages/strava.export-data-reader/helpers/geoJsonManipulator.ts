@@ -166,33 +166,63 @@ export class GeoJsonManipulator {
         };
     }
 
-    public clean(geojson: any, maxDistance = 500): any {
-        function cleanGeometry(geometry: any): any {
-            switch (geometry.type) {
-                case "LineString":
-                    return { ...geometry, coordinates: removeErroneousPoints(geometry.coordinates, maxDistance) };
-                case "MultiLineString":
-                    return { ...geometry, coordinates: geometry.coordinates.map((line: any) => removeErroneousPoints(line, maxDistance)) };
-                case "Polygon":
-                    return { ...geometry, coordinates: geometry.coordinates.map((ring: any) => removeErroneousPoints(ring, maxDistance)) };
-                case "MultiPolygon":
-                    return {
-                    ...geometry,
-                    coordinates: geometry.coordinates.map((poly: any) =>
-                        poly.map((ring: any) => removeErroneousPoints(ring, maxDistance))
-                    )
-                    };
-                default:
-                    return geometry;
-            }
-        }
+    public clean(geojson: any, thresholdKm = 80): any {
+  function haversineKm([lon1, lat1]: number[], [lon2, lat2]: number[]): number {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
 
+  function removeFarOutliers(coords: number[][]): number[][] {
+    if (coords.length < 3) return coords;
+
+    return coords.filter((point, i, arr) => {
+      const distances = arr
+        .filter((_, j) => j !== i)
+        .map(other => haversineKm(point, other));
+      const minDistance = Math.min(...distances);
+      return minDistance <= thresholdKm;
+    });
+  }
+
+  function cleanGeometry(geometry: any): any {
+    switch (geometry.type) {
+      case "LineString":
+        return { ...geometry, coordinates: removeFarOutliers(geometry.coordinates) };
+      case "MultiLineString":
         return {
-            ...geojson,
-            features: geojson.features.map((feature: any) => ({
-                ...feature,
-                geometry: cleanGeometry(feature.geometry)
-            }))
+          ...geometry,
+          coordinates: geometry.coordinates.map((line: any) => removeFarOutliers(line))
         };
+      case "Polygon":
+        return {
+          ...geometry,
+          coordinates: geometry.coordinates.map((ring: any) => removeFarOutliers(ring))
+        };
+      case "MultiPolygon":
+        return {
+          ...geometry,
+          coordinates: geometry.coordinates.map((poly: any) =>
+            poly.map((ring: any) => removeFarOutliers(ring))
+          )
+        };
+      default:
+        return geometry;
     }
+  }
+
+  return {
+    ...geojson,
+    features: geojson.features.map((feature: any) => ({
+      ...feature,
+      geometry: cleanGeometry(feature.geometry)
+    }))
+  };
+}
+
+
 }
