@@ -1,6 +1,10 @@
 import FitParser from "npm:fit-file-parser"
 
-export const parseFitFile = async (content: ArrayBuffer | Uint8Array): Promise<object> => {
+export const parseFitFile = async (content: ArrayBuffer | Uint8Array): Promise<any> => {
+    const payload = content instanceof Uint8Array
+        ? new Uint8Array(content).buffer
+        : content;
+
     return new Promise((resolve, reject) => {
         const fitParser = new FitParser({
             force: true,
@@ -12,12 +16,14 @@ export const parseFitFile = async (content: ArrayBuffer | Uint8Array): Promise<o
             mode: 'cascade',
         });
     
-        fitParser.parse(content, function (error: any, data: Object) {
+        fitParser.parse(payload, function (error, data) {
             // Handle result of parse method
             if (error) {
               reject(error)
-            } else {
+            } else if (data) {
               resolve(data);
+            } else {
+              reject("FIT parser returned no data");
             }
         });
     })
