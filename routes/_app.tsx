@@ -23,6 +23,9 @@ export default function App({ Component, url }: PageProps, ctx: any) {
               <li selected={url.pathname.startsWith('/data-health') ? true : undefined} >
                 <a href="/data-health">Data Health</a>
               </li>
+              <li selected={url.pathname.startsWith('/tasks') ? true : undefined} >
+                <a href="/tasks">Tasks</a>
+              </li>
 
               {url.pathname.startsWith('/training/activities/') && <li selected>
                 <a href="/profile/activities">Activity</a>

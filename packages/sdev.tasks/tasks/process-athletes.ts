@@ -6,7 +6,11 @@ import StravaWGetService from "../../strava.wget.service/index.ts";
 import { fileExists } from "../../strava.export-data-reader/helpers/fileExists.ts";
 
 export const athletes = {
-    process: async (folder: string, strava: StravaDataService) => {
+    process: async (
+        folder: string,
+        strava: StravaDataService,
+        throwIfCancelled?: () => Promise<void>,
+    ) => {
         console.log(colors.blue("::Task::") + 'Processing Athletes');
         try { await Deno.mkdir(`./data/${folder}/athletes/`); } catch {}
 
@@ -30,15 +34,18 @@ export const athletes = {
         const service = StravaWGetService("");
 
         for (const athleteId of athleteIds) {
+            await throwIfCancelled?.();
             const targetFile = `${athletesDir}/${athleteId}.json`;
             if (await fileExists(targetFile)) {
                 continue;
             }
 
             const data = await service.athletes.get(athleteId);
+            await throwIfCancelled?.();
 
             // This is here for rate limiting.
             await new Promise((resolve) => setTimeout(() => resolve(null), 500));
+            await throwIfCancelled?.();
 
             const json = {
                 id: athleteId,

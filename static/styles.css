@@ -165,6 +165,18 @@ button.primary {
   }
 }
 
+button.danger {
+  background-color: #f3d6d6;
+  border-color: #e7b8b8 !important;
+  color: #7d2222;
+
+  &:hover {
+    background-color: #ecc3c3;
+    border-color: #dca7a7 !important;
+    color: #631a1a;
+  }
+}
+
 table {
   > thead {
     > tr {
@@ -250,6 +262,37 @@ div.unit-row {
 .data-health-page {
   background-color: white;
   padding: 1.2em;
+}
+
+.task-progress {
+  position: relative;
+  width: 160px;
+  height: 20px;
+  background-color: #f0f0f5;
+  border: 1px solid #d9dee8;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.task-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background-color: #c3cada;
+  border-radius: 4px;
+}
+
+.task-progress-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74em;
+  color: #2f3542;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-shadow: none;
 }
 
 .thumbnail-frame {

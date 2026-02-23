@@ -1,5 +1,4 @@
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts";
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IBlock } from "../../packages/strava.export-data-reader/interface/block.ts";
@@ -49,17 +48,17 @@ export const handler: Handlers<Props> = {
         const exportFilename = (ctx.state?.data as any)?.uid ?? 'export';
         console.log("POST: Profile")
 
-        await sdevTasks.nullify({
+        await sdevTasks.forceStop({
             userId: exportFilename,
             type: TaskType.GenerateHeatmap,
-            body: "Nullifying  heatmap."
-        } as QueueEntry);
+            body: "Stopping heatmap before regeneration."
+        });
 
-        sdevTasks.enqueue({
+        await sdevTasks.enqueue({
             userId: exportFilename,
             type: TaskType.GenerateHeatmap,
             body: "Generating new heatmap."
-        } as QueueEntry);
+        });
 
         const { pathname } = new URL(_req.url);
         const fullUrl = _req.url.replace(pathname, "")

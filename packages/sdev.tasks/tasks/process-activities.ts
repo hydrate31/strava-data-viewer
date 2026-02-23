@@ -8,10 +8,15 @@ import { TaskType } from "../interfaces/task-type.ts";
 import { QueueEntry } from "../interfaces/queue-entry.ts";
 
 export const activities = {
-    process: async (folder: string, strava: StravaDataService) => {
+    process: async (
+        folder: string,
+        strava: StravaDataService,
+        throwIfCancelled?: () => Promise<void>,
+    ) => {
         console.log(colors.blue("::Task::") + 'Processing Activities');
         const activitiesDir = `./data/${folder}/activities`;
         for await (const dirEntry of Deno.readDir(activitiesDir)) {
+            await throwIfCancelled?.();
             if (dirEntry.name.endsWith(".gz")) {
                 await compressing.gzip.uncompress(`${activitiesDir}/${dirEntry.name}`, `${activitiesDir}/${dirEntry.name.replace('.gz', '')}`)
                 await Deno.remove(`${activitiesDir}/${dirEntry.name}`)
@@ -19,13 +24,15 @@ export const activities = {
             }
         }
 
-        sdevTasks.enqueue({
+        await throwIfCancelled?.();
+        await sdevTasks.enqueue({
             userId: folder,
             type: TaskType.GenerateHeatmap,
             body: "Generating heatmap from activities."
         } as QueueEntry);
 
-        sdevTasks.enqueue({
+        await throwIfCancelled?.();
+        await sdevTasks.enqueue({
             userId: folder,
             type: TaskType.GenerateActivityImages,
             body: "Generating activity route images."

@@ -1,6 +1,5 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
-import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts";
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import sdevTasks from "../../packages/sdev.tasks/index.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
@@ -71,17 +70,17 @@ export const handler: Handlers<Props> = {
     async POST(_req: Request, ctx: FreshContext) {
         const exportFilename = (ctx.state?.data as any)?.uid ?? 'export';
 
-        await sdevTasks.nullify({
+        await sdevTasks.forceStop({
             userId: exportFilename,
             type: TaskType.GenerateActivityImages,
-            body: "Nullifying activity images generation."
-        } as QueueEntry);
+            body: "Stopping activity images generation before regeneration."
+        });
 
-        sdevTasks.enqueue({
+        await sdevTasks.enqueue({
             userId: exportFilename,
             type: TaskType.GenerateActivityImages,
             body: "Generating activity route images."
-        } as QueueEntry);
+        });
 
         const { pathname } = new URL(_req.url);
         const fullUrl = _req.url.replace(pathname, "");

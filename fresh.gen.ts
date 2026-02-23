@@ -20,6 +20,7 @@ import * as $profile_routes from "./routes/profile/routes.tsx";
 import * as $profile_segments from "./routes/profile/segments.tsx";
 import * as $profile_user from "./routes/profile/user.tsx";
 import * as $routes_slug_ from "./routes/routes/[slug].tsx";
+import * as $tasks from "./routes/tasks.tsx";
 import * as $training_activities_slug_ from "./routes/training/activities/[slug].tsx";
 import * as $training_my_activities from "./routes/training/my-activities.tsx";
 import * as $upload from "./routes/upload.tsx";
@@ -46,6 +47,7 @@ const manifest = {
     "./routes/profile/segments.tsx": $profile_segments,
     "./routes/profile/user.tsx": $profile_user,
     "./routes/routes/[slug].tsx": $routes_slug_,
+    "./routes/tasks.tsx": $tasks,
     "./routes/training/activities/[slug].tsx": $training_activities_slug_,
     "./routes/training/my-activities.tsx": $training_my_activities,
     "./routes/upload.tsx": $upload,
