@@ -24,6 +24,7 @@ const bodyByType: Record<TaskType, string> = {
   [TaskType.ProcessAthletes]: "Fetching athlete information.",
   [TaskType.GenerateActivityImages]: "Generating activity route images.",
   [TaskType.GenerateRouteImages]: "Generating route images.",
+  [TaskType.DataQualityScan]: "Scanning dataset quality issues.",
 };
 
 const runningSince = (startedAt: string | null) => {
