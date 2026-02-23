@@ -1,5 +1,6 @@
 export enum TaskType { 
     ProcessActivities,
     GenerateHeatmap,
-    ProcessAthletes
+    ProcessAthletes,
+    GenerateActivityImages
 }

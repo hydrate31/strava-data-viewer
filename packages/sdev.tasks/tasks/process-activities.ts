@@ -24,5 +24,11 @@ export const activities = {
             type: TaskType.GenerateHeatmap,
             body: "Generating heatmap from activities."
         } as QueueEntry);
+
+        sdevTasks.enqueue({
+            userId: folder,
+            type: TaskType.GenerateActivityImages,
+            body: "Generating activity route images."
+        } as QueueEntry);
     }
 }

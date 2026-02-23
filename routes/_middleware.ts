@@ -85,5 +85,24 @@ export async function handler(
         }
     }
 
+    if (pathname.startsWith('/activity-images/')) {
+        const id = decodeURIComponent(pathname.replaceAll('/activity-images/', ''));
+        if (unsafePath(id)) {
+            return new Response("400 Bad Request", { status: 400 });
+        }
+
+        try {
+            const file = await Deno.open(`./data/${folder}/activity-images/${id}`, { read: true });
+            return new Response(file.readable, {
+                headers: {
+                    "content-type": "image/svg+xml"
+                }
+            });
+        } catch (error) {
+            console.error(error)
+            return new Response("404 Not Found", { status: 404 });
+        }
+    }
+
     return await ctx.next();
 }
