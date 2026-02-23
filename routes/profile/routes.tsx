@@ -13,6 +13,8 @@ interface Props {
     media: IMedia[]
     routes: IRoute[]
     routeImagesStatus: string
+    routeImageVersion: string
+    routeImageIds: string[]
 }
 
 const routeImageId = (filename: string) => {
@@ -33,12 +35,28 @@ export const handler: Handlers<Props> = {
         const media = await strava.profile.getMedia();
         const routes = await strava.routes.list();
         const routeImagesStatus = await sdevTasks.status(TaskType.GenerateRouteImages, folder);
+        const routeImageIds: string[] = [];
+        let latestImageTimestamp = 0;
+
+        try {
+            for await (const entry of Deno.readDir(`./data/${folder}/route-images`)) {
+                if (!entry.isFile || !entry.name.endsWith(".svg")) continue;
+                const id = entry.name.replace(".svg", "");
+                routeImageIds.push(id);
+
+                const stat = await Deno.stat(`./data/${folder}/route-images/${entry.name}`);
+                const modified = stat.mtime?.getTime() ?? 0;
+                if (modified > latestImageTimestamp) latestImageTimestamp = modified;
+            }
+        } catch {}
 
         return ctx.render({
             profile,
             media,
             routes,
             routeImagesStatus,
+            routeImageVersion: String(latestImageTimestamp),
+            routeImageIds,
         });
     },
 
@@ -86,13 +104,14 @@ export const Routes = ({ data }: PageProps<Props>) => <>
         <tbody>
             {data.routes.map(route => <tr>
                 <td>
-                    <div style="background: #efefef; width: 100px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
-                        <img
-                            src={`/route-images/${routeImageId(route.filename)}.svg`}
+                    <div class="thumbnail-frame">
+                        {data.routeImageIds.includes(routeImageId(route.filename)) && <img
+                            class="thumbnail-image"
+                            src={`/route-images/${routeImageId(route.filename)}.svg?v=${data.routeImageVersion}`}
                             alt={`Route image for ${route.name}`}
-                            style="max-width: 96px; max-height: 56px; display: block;"
                             loading="lazy"
-                        />
+                        />}
+                        {!data.routeImageIds.includes(routeImageId(route.filename)) && <span class="thumbnail-placeholder">No map</span>}
                     </div>
                 </td>
                 <td><a href={`/routes/${route.filename.replace("routes/", "").replace(".gpx", "")}`}>{route.name}</a></td>

@@ -18,6 +18,8 @@ interface Props {
     following: IFollow[]
     clubs: IClub[]
     activityImagesStatus: string
+    activityImageVersion: string
+    activityImageIds: string[]
 }
 
 const time = {
@@ -38,6 +40,20 @@ export const handler: Handlers<Props> = {
         const following = await strava.profile.getFollowing();
         const clubs = await strava.profile.getClubs();
         const activityImagesStatus = await sdevTasks.status(TaskType.GenerateActivityImages, folder);
+        const activityImageIds: string[] = [];
+        let latestImageTimestamp = 0;
+
+        try {
+            for await (const entry of Deno.readDir(`./data/${folder}/activity-images`)) {
+                if (!entry.isFile || !entry.name.endsWith(".svg")) continue;
+                const id = entry.name.replace(".svg", "");
+                activityImageIds.push(id);
+
+                const stat = await Deno.stat(`./data/${folder}/activity-images/${entry.name}`);
+                const modified = stat.mtime?.getTime() ?? 0;
+                if (modified > latestImageTimestamp) latestImageTimestamp = modified;
+            }
+        } catch {}
 
         return ctx.render({
             activities,
@@ -46,7 +62,9 @@ export const handler: Handlers<Props> = {
             followers,
             following,
             clubs,
-            activityImagesStatus
+            activityImagesStatus,
+            activityImageVersion: String(latestImageTimestamp),
+            activityImageIds
         });
     },
 
@@ -96,13 +114,14 @@ export const Activities = (props: PageProps<Props>) => <>
         <tbody>
             {props.data.activities.map((activity: any) => <tr>
                 <td>
-                    <div style="background: #efefef; width: 100px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
-                        <img
-                            src={`/activity-images/${activity.activity_id}.svg`}
+                    <div class="thumbnail-frame">
+                        {props.data.activityImageIds.includes(activity.activity_id) && <img
+                            class="thumbnail-image"
+                            src={`/activity-images/${activity.activity_id}.svg?v=${props.data.activityImageVersion}`}
                             alt={`Route for ${activity.activity_name}`}
-                            style="max-width: 96px; max-height: 56px; display: block;"
                             loading="lazy"
-                        />
+                        />}
+                        {!props.data.activityImageIds.includes(activity.activity_id) && <span class="thumbnail-placeholder">No map</span>}
                     </div>
                 </td>
                 <td>{activity.activity_type}</td>
