@@ -1,5 +1,7 @@
 import { parse } from "@std/csv/parse";
 import clubs_columns from "./data/clubs-columns.ts";
+import comment_columns from "./data/comment-columns.ts";
+import contact_columns from "./data/contact-columns.ts";
 import application_columns from "./data/application-columns.ts";
 import connected_app_columns from "./data/connected-app-columns.ts";
 import event_columns from "./data/event-columns.ts";
@@ -13,6 +15,8 @@ import email_preferences_columns from "./data/email-preferences-columns.ts";
 import { fileExists } from "./helpers/fileExists.ts";
 import { IApplication } from "./interface/application.ts";
 import { IConnectedApp } from "./interface/connected_app.ts";
+import { IComment } from "./interface/comment.ts";
+import { IContact } from "./interface/contact.ts";
 import { IEmailPreference } from "./interface/email_preference.ts";
 import { IEvent } from "./interface/event.ts";
 import { IProfile } from "./interface/profile.ts";
@@ -211,5 +215,43 @@ export default (folder: string) => ({
         }) as any as IEmailPreference[];
 
         return preferences[0] ?? null;
+    },
+
+    getContacts: async (): Promise<IContact[]> => {
+        const path = `./data/${folder}/contacts.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const contacts: IContact[] = parse(data, {
+            columns: contact_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return contacts;
+    },
+
+    getComments: async (): Promise<IComment[]> => {
+        const path = `./data/${folder}/comments.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const comments: IComment[] = parse(data, {
+            columns: comment_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return comments;
     }
 })

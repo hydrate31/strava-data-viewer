@@ -3,6 +3,7 @@ import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts"
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IComment } from "../../packages/strava.export-data-reader/interface/comment.ts";
 import { IEvent } from "../../packages/strava.export-data-reader/interface/event.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
@@ -13,6 +14,7 @@ interface Props {
     media: IMedia[]
     clubs: IClub[]
     events: IEvent[]
+    comments: IComment[]
 }
   
 export const handler: Handlers<Props> = {
@@ -26,6 +28,7 @@ export const handler: Handlers<Props> = {
         const following = await strava.profile.getFollowing();
         const clubs = await strava.profile.getClubs();
         const events = await strava.profile.getEvents();
+        const comments = await strava.profile.getComments();
 
         return ctx.render({
             profile,
@@ -33,7 +36,8 @@ export const handler: Handlers<Props> = {
             followers,
             following,
             clubs,
-            events
+            events,
+            comments
         });
     },
 
@@ -130,6 +134,25 @@ export const Overview = (props: PageProps<Props>) => <>
                 </a>
             </li>)}
         </ol>
+    </section>
+
+    <section>
+        <h3>Comments</h3>
+        {props.data.comments.length > 0 && <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.data.comments.map((comment) => <tr>
+                    <td>{comment.comment_date}</td>
+                    <td>{comment.comment}</td>
+                </tr>)}
+            </tbody>
+        </table>}
+        {props.data.comments.length == 0 && <p>None</p>}
     </section>
 </>
 

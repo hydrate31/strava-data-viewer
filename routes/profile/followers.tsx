@@ -3,6 +3,7 @@ import sdevTasks from "../../packages/sdev.tasks/index.ts";
 import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts";
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IContact } from "../../packages/strava.export-data-reader/interface/contact.ts";
 import { IFollow } from "../../packages/strava.export-data-reader/interface/follow.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
@@ -14,6 +15,7 @@ interface Props {
     media: IMedia[]
     followers: IFollow[]
     following: IFollow[]
+    contacts: IContact[]
 }
 
   
@@ -27,6 +29,7 @@ export const handler: Handlers<Props> = {
         const media = await strava.profile.getMedia();
         const followers = await strava.profile.getFollowers();
         const following = await strava.profile.getFollowing();
+        const contacts = await strava.profile.getContacts();
         const clubs = await strava.profile.getClubs();
         
         return ctx.render({
@@ -35,6 +38,7 @@ export const handler: Handlers<Props> = {
             media,
             followers,
             following,
+            contacts,
             clubs
         });
     },
@@ -61,6 +65,7 @@ export const handler: Handlers<Props> = {
         const media = await strava.profile.getMedia();
         const followers = await strava.profile.getFollowers();
         const following = await strava.profile.getFollowing();
+        const contacts = await strava.profile.getContacts();
         const clubs = await strava.profile.getClubs();
 
         return ctx.render({
@@ -69,6 +74,7 @@ export const handler: Handlers<Props> = {
             media,
             followers,
             following,
+            contacts,
             clubs
         });
     }
@@ -84,6 +90,7 @@ export const Followers = (props: PageProps<Props>) => <>
             <thead>
                 <tr>
                     <th>Athelete</th>
+                    <th>Contact</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -95,6 +102,7 @@ export const Followers = (props: PageProps<Props>) => <>
                             props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.name ?? follow.athelete_id
                         }</a>
                     </td>
+                    <td>{props.data.contacts.find((contact) => contact.athlete_id == follow.athelete_id)?.contact ?? '-'}</td>
                     <td title={follow.created_at}>
                         <button disabled>{follow.status == 'Accepted' ? 'Follow Requested' : 'Following'}</button>
                     </td>
@@ -110,6 +118,7 @@ export const Followers = (props: PageProps<Props>) => <>
             <thead>
                 <tr>
                     <th>Athelete</th>
+                    <th>Contact</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,6 +129,7 @@ export const Followers = (props: PageProps<Props>) => <>
                             props.data.athletes?.find(entry => entry.id == follow.athelete_id)?.name ?? follow.athelete_id
                         }</a>
                     </td>
+                    <td>{props.data.contacts.find((contact) => contact.athlete_id == follow.athelete_id)?.contact ?? '-'}</td>
                 </tr>)}
             </tbody>
         </table> }

@@ -36,5 +36,11 @@ export default (folder: string) => ({
     },
     getEmailPreferences: async () => {
         return await reader(folder).profile.getEmailPreferences();
+    },
+    getContacts: async () => {
+        return await reader(folder).profile.getContacts();
+    },
+    getComments: async () => {
+        return await reader(folder).profile.getComments();
     }
 })
