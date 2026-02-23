@@ -21,7 +21,7 @@ export const heatmap = {
         const gpxFiles: string[] = [];
         for await (const dirEntry of Deno.readDir(activitiesDir)) {
             if (dirEntry.name.endsWith(".gpx")) {
-            gpxFiles.push(dirEntry.name);
+                gpxFiles.push(dirEntry.name);
             }
         }
 
@@ -40,9 +40,9 @@ export const heatmap = {
             try {
                 const gpxData = await Deno.readTextFile(gpxPath);
                 let geoJSON = await strava.activities.getGeoJsonFromGPX(gpxData);
-                geoJSON = manipulator.simplify(geoJSON, 0.0004);
-                for (let i = 0; i < 12; i++) {
-                    geoJSON = manipulator.clean(geoJSON, 3);
+                geoJSON = manipulator.simplify(geoJSON, 0.00019);
+                for (let i = 0; i < 32; i++) {
+                    geoJSON = manipulator.clean(geoJSON, 1);
                 }
 
                 const pointSet = await strava.activities.parseGeoJsonToPoints(geoJSON);

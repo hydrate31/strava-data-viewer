@@ -35,7 +35,27 @@ export const handler: Handlers<Props> = {
             // Initialize the map centered on the first coordinate
             const map = new maplibregl.Map({
                 container: 'map',
-                style: 'https://tiles.openfreemap.org/styles/liberty',
+                style: {
+                    version: 8,
+                    sources: {
+                        osm: {
+                            type: 'raster',
+                            tiles: [
+                                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                            ],
+                            tileSize: 256
+                        }
+                    },
+                    layers: [
+                        {
+                            id: 'osm-layer',
+                            type: 'raster',
+                            source: 'osm'
+                        }
+                    ]
+                },
                 center: [-2.6276908, 53.9690089], // fallback if no coord found
                 zoom: 8
             });
