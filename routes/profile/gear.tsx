@@ -61,6 +61,30 @@ export const Gear = ({ data }: PageProps<Props>) => <>
     <br />
 
     <section>
+        <h2>My Components</h2>
+        {data.components.length > 0 && <table>
+            <thead>
+                <tr>
+                    <th>Bike</th>
+                    <th>Type</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                </tr>
+            </thead>
+            <tbody>
+                {data.components.map(component => <tr>
+                    <td>{component.bike_name}</td>
+                    <td>{component.type}</td>
+                    <td>{component.brand}</td>
+                    <td>{component.model}</td>
+                </tr>)}
+            </tbody>
+        </table>}
+        {data.components.length == 0 && <p>None</p>}
+    </section>
+    <br />
+
+    <section>
         <h2>My Shoes</h2>
         <table>
             <thead>
