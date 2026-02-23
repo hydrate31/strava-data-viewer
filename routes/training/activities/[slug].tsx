@@ -346,17 +346,25 @@ const loadTrackPoints = async (
   folder: string,
   activityId: string,
 ): Promise<TrackPoint[]> => {
-  const gpxPath = `./data/${folder}/activities/${activityId}.gpx`;
+  const safeId = activityId
+    .replaceAll("\\", "/")
+    .split("/")
+    .pop()
+    ?.replace(/\.(gpx|fit|gz)$/i, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "") ?? "";
+  if (!safeId || safeId.includes("..")) return [];
+
+  const gpxPath = `./data/${folder}/activities/${safeId}.gpx`;
   if (await fileExists(gpxPath)) {
     return withPaceSeries(await parseGpxTrackPoints(gpxPath));
   }
 
-  const fitPath = `./data/${folder}/activities/${activityId}.fit`;
+  const fitPath = `./data/${folder}/activities/${safeId}.fit`;
   if (await fileExists(fitPath)) {
     try {
       return withPaceSeries(await parseFitTrackPoints(fitPath));
     } catch (error) {
-      console.warn(`Failed to parse FIT track points for ${activityId}`, error);
+      console.warn(`Failed to parse FIT track points for ${safeId}`, error);
     }
   }
 
