@@ -2,6 +2,7 @@ import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
 import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts";
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import { IBlock } from "../../packages/strava.export-data-reader/interface/block.ts";
 import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
 import { IComment } from "../../packages/strava.export-data-reader/interface/comment.ts";
 import { IEvent } from "../../packages/strava.export-data-reader/interface/event.ts";
@@ -15,6 +16,7 @@ interface Props {
     clubs: IClub[]
     events: IEvent[]
     comments: IComment[]
+    blocks: IBlock[]
 }
   
 export const handler: Handlers<Props> = {
@@ -29,6 +31,7 @@ export const handler: Handlers<Props> = {
         const clubs = await strava.profile.getClubs();
         const events = await strava.profile.getEvents();
         const comments = await strava.profile.getComments();
+        const blocks = await strava.profile.getBlocks();
 
         return ctx.render({
             profile,
@@ -37,7 +40,8 @@ export const handler: Handlers<Props> = {
             following,
             clubs,
             events,
-            comments
+            comments,
+            blocks
         });
     },
 
@@ -153,6 +157,25 @@ export const Overview = (props: PageProps<Props>) => <>
             </tbody>
         </table>}
         {props.data.comments.length == 0 && <p>None</p>}
+    </section>
+
+    <section>
+        <h3>Blocks</h3>
+        {props.data.blocks.length > 0 && <table>
+            <thead>
+                <tr>
+                    <th>Athlete ID</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.data.blocks.map((block) => <tr>
+                    <td>{block.athlete_id}</td>
+                    <td>{block.created_at}</td>
+                </tr>)}
+            </tbody>
+        </table>}
+        {props.data.blocks.length == 0 && <p>None</p>}
     </section>
 </>
 

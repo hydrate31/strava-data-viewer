@@ -42,5 +42,8 @@ export default (folder: string) => ({
     },
     getComments: async () => {
         return await reader(folder).profile.getComments();
+    },
+    getBlocks: async () => {
+        return await reader(folder).profile.getBlocks();
     }
 })

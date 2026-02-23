@@ -1,4 +1,5 @@
 import { parse } from "@std/csv/parse";
+import block_columns from "./data/block-columns.ts";
 import clubs_columns from "./data/clubs-columns.ts";
 import comment_columns from "./data/comment-columns.ts";
 import contact_columns from "./data/contact-columns.ts";
@@ -14,6 +15,7 @@ import follow_columns from "./data/follow-columns.ts";
 import email_preferences_columns from "./data/email-preferences-columns.ts";
 import { fileExists } from "./helpers/fileExists.ts";
 import { IApplication } from "./interface/application.ts";
+import { IBlock } from "./interface/block.ts";
 import { IConnectedApp } from "./interface/connected_app.ts";
 import { IComment } from "./interface/comment.ts";
 import { IContact } from "./interface/contact.ts";
@@ -253,5 +255,24 @@ export default (folder: string) => ({
         }) as any;
 
         return comments;
+    },
+
+    getBlocks: async (): Promise<IBlock[]> => {
+        const path = `./data/${folder}/blocks.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const blocks: IBlock[] = parse(data, {
+            columns: block_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return blocks;
     }
 })
