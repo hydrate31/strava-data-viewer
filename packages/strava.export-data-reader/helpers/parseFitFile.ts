@@ -1,8 +1,8 @@
-import FitParser from "npm:fit-file-parser/dist/fit-parser.js"
+import FitParser from "npm:fit-file-parser"
 
-export const parseFitFile = async (content: string): Promise<Object> => {
+export const parseFitFile = async (content: ArrayBuffer | Uint8Array): Promise<object> => {
     return new Promise((resolve, reject) => {
-        const fitParser = new FitParser.default({
+        const fitParser = new FitParser({
             force: true,
             speedUnit: 'km/h',
             lengthUnit: 'km',

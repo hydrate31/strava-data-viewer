@@ -7,6 +7,79 @@ import { DOMParser } from "npm:xmldom"
 import { fileExists } from "./helpers/fileExists.ts";
 import { parseFitFile } from "./helpers/parseFitFile.ts";
 
+const emptyFeatureCollection = {
+    type: "FeatureCollection",
+    features: [],
+};
+
+const semicircleToDegrees = (value: number) => value * (180 / 2 ** 31);
+
+const normalizeCoordinate = (value: number, isLatitude: boolean): number | null => {
+    if (!Number.isFinite(value)) return null;
+    const max = isLatitude ? 90 : 180;
+
+    if (Math.abs(value) <= max) return value;
+
+    const converted = semicircleToDegrees(value);
+    if (Math.abs(converted) <= max) return converted;
+
+    return null;
+};
+
+const fitRecordsToCoordinates = (records: any[]): number[][] => {
+    const coordinates: number[][] = [];
+
+    for (const record of records ?? []) {
+        const rawLat = Number(record?.position_lat);
+        const rawLng = Number(record?.position_long);
+        const lat = normalizeCoordinate(rawLat, true);
+        const lng = normalizeCoordinate(rawLng, false);
+
+        if (lat == null || lng == null) continue;
+        coordinates.push([lng, lat]);
+    }
+
+    return coordinates;
+};
+
+const fitToGeoJson = (fitData: any) => {
+    const topLevelRecords = Array.isArray(fitData?.records) ? fitData.records : [];
+    const nestedSessionRecords = Array.isArray(fitData?.sessions)
+        ? fitData.sessions.flatMap((session: any) => Array.isArray(session?.records) ? session.records : [])
+        : [];
+    const nestedActivitySessionRecords = Array.isArray(fitData?.activity?.sessions)
+        ? fitData.activity.sessions.flatMap((session: any) => Array.isArray(session?.records) ? session.records : [])
+        : [];
+    const nestedLapRecords = Array.isArray(fitData?.activity?.sessions)
+        ? fitData.activity.sessions.flatMap((session: any) =>
+            Array.isArray(session?.laps)
+                ? session.laps.flatMap((lap: any) => Array.isArray(lap?.records) ? lap.records : [])
+                : []
+        )
+        : [];
+    const records = [
+        ...topLevelRecords,
+        ...nestedSessionRecords,
+        ...nestedActivitySessionRecords,
+        ...nestedLapRecords,
+    ];
+    const coordinates = fitRecordsToCoordinates(records);
+
+    if (coordinates.length === 0) return emptyFeatureCollection;
+
+    return {
+        type: "FeatureCollection",
+        features: [{
+            type: "Feature",
+            geometry: {
+                type: "LineString",
+                coordinates,
+            },
+            properties: {},
+        }],
+    };
+};
+
 export default (folder: string) => ({
     get: async (): Promise<IActivity[]> => {
         const data = await Deno.readTextFile(`./data/${folder}/activities.csv`);
@@ -35,9 +108,20 @@ export default (folder: string) => ({
             const geojson = gpx(gpxXml);
             return JSON.stringify(geojson);
         }
-        else {
-            return ""
+
+        const fitFileExists = await fileExists(`./data/${folder}/activities/${id}.fit`);
+        if (fitFileExists) {
+            try {
+                const fitData = await Deno.readFile(`./data/${folder}/activities/${id}.fit`);
+                const fit = await parseFitFile(fitData);
+                return JSON.stringify(fitToGeoJson(fit));
+            }
+            catch (error) {
+                console.warn(`Failed to parse FIT file for activity ${id}`, error);
+            }
         }
+
+        return JSON.stringify(emptyFeatureCollection);
     },
     getGeoJsonFromGPX: async (gpxData: string): Promise<any> => {
         const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
@@ -45,18 +129,30 @@ export default (folder: string) => ({
         return geojson;
     },
     parseFileToPoints: async (id: string): Promise<number[][]> => {
-        let geojson = null;
         const gpxFileExists = await fileExists(`./data/${folder}/activities/${id}.gpx`);
         if (gpxFileExists) {
             const gpxData = await Deno.readTextFile(`./data/${folder}/activities/${id}.gpx`);
             const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
-            geojson = gpx(gpxXml);
+            const geojson = gpx(gpxXml);
             const coordinates = (geojson.features[0].geometry as any).coordinates
             return coordinates;
         }
-        else {
-            return []
+
+        const fitFileExists = await fileExists(`./data/${folder}/activities/${id}.fit`);
+        if (fitFileExists) {
+            try {
+                const fitData = await Deno.readFile(`./data/${folder}/activities/${id}.fit`);
+                const fit = await parseFitFile(fitData);
+                const geojson = fitToGeoJson(fit);
+                const feature = geojson.features[0] as any;
+                return feature?.geometry?.coordinates ?? [];
+            }
+            catch (error) {
+                console.warn(`Failed to parse FIT points for activity ${id}`, error);
+            }
         }
+
+        return []
     },
 
     parseGPXToPoints: async (gpxData: string): Promise<number[][]> => {
