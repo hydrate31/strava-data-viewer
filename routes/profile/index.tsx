@@ -3,6 +3,7 @@ import { QueueEntry } from "../../packages/sdev.tasks/interfaces/queue-entry.ts"
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IClub } from "../../packages/strava.export-data-reader/interface/club.ts";
+import { IEvent } from "../../packages/strava.export-data-reader/interface/event.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import sdevTasks from "../../packages/sdev.tasks/index.ts";
@@ -11,6 +12,7 @@ interface Props {
     profile: IProfile
     media: IMedia[]
     clubs: IClub[]
+    events: IEvent[]
 }
   
 export const handler: Handlers<Props> = {
@@ -23,13 +25,15 @@ export const handler: Handlers<Props> = {
         const followers = await strava.profile.getFollowers();
         const following = await strava.profile.getFollowing();
         const clubs = await strava.profile.getClubs();
+        const events = await strava.profile.getEvents();
 
         return ctx.render({
             profile,
             media,
             followers,
             following,
-            clubs
+            clubs,
+            events
         });
     },
 
@@ -98,6 +102,23 @@ export const Overview = (props: PageProps<Props>) => <>
         </>}
         
         <h3>Events</h3>
+        {props.data.events.length > 0 && <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Start Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.data.events.map(event => <tr>
+                    <td>{event.title}</td>
+                    <td>{event.description}</td>
+                    <td>{event.start_time}</td>
+                </tr>)}
+            </tbody>
+        </table>}
+        {props.data.events.length == 0 && <p>None</p>}
     </section>
 
     <section>

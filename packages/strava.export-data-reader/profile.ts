@@ -1,11 +1,14 @@
 import { parse } from "@std/csv/parse";
 import clubs_columns from "./data/clubs-columns.ts";
+import event_columns from "./data/event-columns.ts";
 import profile_columns from "./data/profile-columns.ts";
 import media_columns from "./data/media-columns.ts";
 import global_challenges_columns from "./data/global-challenges-columns.ts";
 import local_challenges_columns from "./data/group-challenges-columns.ts";
 import goal_columns from "./data/goal-columns.ts";
 import follow_columns from "./data/follow-columns.ts";
+import { fileExists } from "./helpers/fileExists.ts";
+import { IEvent } from "./interface/event.ts";
 import { IProfile } from "./interface/profile.ts";
 import { IMedia } from "./interface/media.ts";
 import { IGlobalChallenge } from "./interface/global-challenges.ts";
@@ -126,5 +129,24 @@ export default (folder: string) => ({
         }) as any;
         
         return clubs;
+    },
+
+    getEvents: async (): Promise<IEvent[]> => {
+        const path = `./data/${folder}/events.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const events: IEvent[] = parse(data, {
+            columns: event_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return events;
     }
 })

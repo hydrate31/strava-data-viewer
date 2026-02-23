@@ -24,5 +24,8 @@ export default (folder: string) => ({
     },
     getClubs: async () => {
         return await reader(folder).profile.getClubs();
+    },
+    getEvents: async () => {
+        return await reader(folder).profile.getEvents();
     }
 })
