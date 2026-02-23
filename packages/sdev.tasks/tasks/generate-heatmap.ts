@@ -18,28 +18,37 @@ export const heatmap = {
         const manipulator = new GeoJsonManipulator();
         const entries: number[][][] = [];
 
-        const gpxFiles: string[] = [];
+        const activityIds = new Set<string>();
         for await (const dirEntry of Deno.readDir(activitiesDir)) {
+            if (!dirEntry.isFile) continue;
+
             if (dirEntry.name.endsWith(".gpx")) {
-                gpxFiles.push(dirEntry.name);
+                activityIds.add(dirEntry.name.replace(".gpx", ""));
+            }
+
+            if (dirEntry.name.endsWith(".fit")) {
+                activityIds.add(dirEntry.name.replace(".fit", ""));
             }
         }
 
-        const total = gpxFiles.length;
+        const activityList = Array.from(activityIds);
+        const total = activityList.length;
         let progress = 0;
         let lastLoggedPercentage = 0;
 
         const batchSize = 2;
-        for (let i = 0; i < gpxFiles.length; i += batchSize) {
-            const batch = gpxFiles.slice(i, i + batchSize);
+        for (let i = 0; i < activityList.length; i += batchSize) {
+            const batch = activityList.slice(i, i + batchSize);
 
-            const tasks = batch.map(async (filename) => {
-            const id = filename.replace(".gpx", "");
-            const gpxPath = `./data/export/activities/${id}.gpx`;
-
+            const tasks = batch.map(async (id) => {
             try {
-                const gpxData = await Deno.readTextFile(gpxPath);
-                let geoJSON = await strava.activities.getGeoJsonFromGPX(gpxData);
+                const geoJSONText = await strava.activities.getGeoJson(id);
+                let geoJSON = JSON.parse(geoJSONText);
+
+                if (!geoJSON?.features?.length) {
+                    return;
+                }
+
                 geoJSON = manipulator.simplify(geoJSON, 0.00019);
                 for (let i = 0; i < 32; i++) {
                     geoJSON = manipulator.clean(geoJSON, 1);
@@ -50,7 +59,7 @@ export const heatmap = {
                     entries.push(points.map((point: any) => [point[0], point[1]]));
                 });
             } catch (err) {
-                console.error(`Error processing ${id}.gpx:`, err);
+                console.error(`Error processing ${id}:`, err);
             } finally {
                 const percentage = Math.floor((++progress / total) * 100);
                 if (percentage !== lastLoggedPercentage) {
@@ -70,4 +79,3 @@ export const heatmap = {
         await strava.activities.cacheHeatmap(entries);
     }
 }
-
