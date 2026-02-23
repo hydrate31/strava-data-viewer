@@ -70,6 +70,12 @@ export const handler: Handlers<Props> = {
                 body: "Fetching athelete information..."
             } as QueueEntry);
 
+            sdevTasks.enqueue({
+                userId: exportFilename,
+                type: TaskType.GenerateRouteImages,
+                body: "Generating route images."
+            } as QueueEntry);
+
             console.info(' ------------ Cleanup ------------')
             if (await fileExists(exportZipFile)) {
                 await Deno.remove(exportZipFile)

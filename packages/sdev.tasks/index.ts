@@ -4,6 +4,7 @@ import { TaskType } from "./interfaces/task-type.ts";
 import { StravaDataService } from "../strava.data.service/index.ts";
 import { heatmap } from "./tasks/generate-heatmap.ts";
 import { activityImages } from "./tasks/generate-activity-images.ts";
+import { routeImages } from "./tasks/generate-route-images.ts";
 import { activities } from "./tasks/process-activities.ts";
 import { athletes } from "./tasks/process-athletes.ts";
 
@@ -66,6 +67,11 @@ tasks.listenQueue(async (entry: QueueEntry) => {
         case TaskType.GenerateActivityImages:
             tasks.set([`${entry.type}:${entry.userId}`], 'running');
             await activityImages.generate(entry.userId, strava);
+            tasks.set([`${entry.type}:${entry.userId}`], 'stopped');
+            break;
+        case TaskType.GenerateRouteImages:
+            tasks.set([`${entry.type}:${entry.userId}`], 'running');
+            await routeImages.generate(entry.userId, strava);
             tasks.set([`${entry.type}:${entry.userId}`], 'stopped');
             break;
     }

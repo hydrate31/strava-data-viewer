@@ -2,5 +2,6 @@ export enum TaskType {
     ProcessActivities,
     GenerateHeatmap,
     ProcessAthletes,
-    GenerateActivityImages
+    GenerateActivityImages,
+    GenerateRouteImages
 }
