@@ -1,8 +1,6 @@
 import reader from "../strava.export-data-reader/index.ts";
 
-const folder = 'export';
-
-export default {
+export default (folder: string) => ({
     get: async () => {
         return await reader(folder).profile.get();
     },
@@ -27,4 +25,4 @@ export default {
     getClubs: async () => {
         return await reader(folder).profile.getClubs();
     }
-}
+})

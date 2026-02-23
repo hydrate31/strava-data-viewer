@@ -1,15 +1,12 @@
-import reader from "../strava.export-data-reader/index.ts";
-
-const folder = 'export';
-export default {
+export default (folder: string) => ({
     list: async () => {
         const athletes = []
-        for await (const dirEntry of Deno.readDir(`./data/export/athletes/`)) {
+        for await (const dirEntry of Deno.readDir(`./data/${folder}/athletes/`)) {
             if (dirEntry.isFile) {
-                const json = JSON.parse(await Deno.readTextFile(`./data/export/athletes/${dirEntry.name}`));
+                const json = JSON.parse(await Deno.readTextFile(`./data/${folder}/athletes/${dirEntry.name}`));
                 athletes.push(json);
             }
         }
         return athletes
     },
-}
+})

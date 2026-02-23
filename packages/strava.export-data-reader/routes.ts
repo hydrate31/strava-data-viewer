@@ -7,7 +7,7 @@ import { DOMParser } from "npm:xmldom"
 
 export default (folder: string) => ({
     get: async (): Promise<IRoute[]> => {
-        const data = await Deno.readTextFile("./data/export/routes.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/routes.csv`);
         const routes: IRoute[] = parse(data, {
             columns: route_columns,
             skipFirstRow: true,
@@ -21,7 +21,7 @@ export default (folder: string) => ({
     },
 
     getGeoJson: async (file: string): Promise<string> => {
-        const gpxData = await Deno.readTextFile(`./data/export/${file}`);
+        const gpxData = await Deno.readTextFile(`./data/${folder}/${file}`);
         const gpxXml = new DOMParser().parseFromString(gpxData, "text/xml");
         const geojson = gpx(gpxXml);
         return JSON.stringify(geojson);

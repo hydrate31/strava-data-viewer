@@ -1,7 +1,6 @@
 import reader from "../strava.export-data-reader/index.ts";
 
-const folder = 'export';
-export default {
+export default (folder: string) => ({
     list: async () => {
         return await reader(folder).activities.get();
     },
@@ -56,4 +55,4 @@ export default {
     parseFileToPoints: async (id: string) => await reader(folder).activities.parseFileToPoints(id),
     parseGPXToPoints: async (data: string) => await reader(folder).activities.parseGPXToPoints(data),
     parseGeoJsonToPoints: async (data: any) => await reader(folder).activities.parseGeoJsonToPoints(data),
-}
+})

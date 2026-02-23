@@ -5,7 +5,7 @@ import { ISegment } from "./interface/segment.ts";
 
 export default (folder: string) => ({
     get: async (): Promise<ISegment[]> => {
-        const data = await Deno.readTextFile("./data/export/segments.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/segments.csv`);
         const segments: ISegment[] = parse(data, {
             columns: segment_columns,
             skipFirstRow: true,

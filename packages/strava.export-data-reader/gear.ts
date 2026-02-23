@@ -11,7 +11,7 @@ import { IShoe } from "./interface/shoe.ts";
 
 export default (folder: string) => ({
     getBikes: async (): Promise<IBike[]> => {
-        const data = await Deno.readTextFile("./data/export/bikes.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/bikes.csv`);
         const component: IBike[] = parse(data, {
             columns: bike_columns,
             skipFirstRow: true,
@@ -25,7 +25,7 @@ export default (folder: string) => ({
     },
     
     getComponents: async (): Promise<IComponent[]> => {
-        const data = await Deno.readTextFile("./data/export/components.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/components.csv`);
         const component: IComponent[] = parse(data, {
             columns: component_columns,
             skipFirstRow: true,
@@ -39,7 +39,7 @@ export default (folder: string) => ({
     },
 
     getShoes: async (): Promise<IShoe[]> => {
-        const data = await Deno.readTextFile("./data/export/shoes.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/shoes.csv`);
         const shoes: IShoe[] = parse(data, {
             columns: shoe_columns,
             skipFirstRow: true,

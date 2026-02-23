@@ -15,12 +15,16 @@ export class StravaDataService {
             this.folder = folder;
         }
         this.reader = reader(this.folder);
+        this.activities = activities(this.folder);
+        this.athletes = athletes(this.folder);
+        this.gear = gear(this.folder);
+        this.profile = profile(this.folder);
     }
 
-    activities = activities;
-    athletes = athletes;
-    gear = gear;
-    profile = profile;
+    activities;
+    athletes;
+    gear;
+    profile;
     routes = {
         list: async () => {
             return await this.reader.routes.get();

@@ -17,7 +17,7 @@ import { IClub } from "./interface/club.ts";
 
 export default (folder: string) => ({
     get: async (): Promise<IProfile> => {
-        const data = await Deno.readTextFile("./data/export/profile.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/profile.csv`);
         const profile: IProfile = parse(data, {
             columns: profile_columns,
             skipFirstRow: true,
@@ -31,7 +31,7 @@ export default (folder: string) => ({
     },
 
     getMedia: async(): Promise<IMedia[]> => {
-        const data = await Deno.readTextFile("./data/export/media.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/media.csv`);
         const media: IMedia[] = parse(data, {
             columns: media_columns,
             skipFirstRow: true,
@@ -45,7 +45,7 @@ export default (folder: string) => ({
     },
 
     getGlobalChallenges: async (): Promise<IGlobalChallenge[]> => {
-        const data = await Deno.readTextFile("./data/export/global_challenges.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/global_challenges.csv`);
         const globalChallenges: IGlobalChallenge[] = parse(data, {
             columns: global_challenges_columns,
             skipFirstRow: true,
@@ -59,7 +59,7 @@ export default (folder: string) => ({
     },
 
     getGroupChallenges: async (): Promise<IGroupChallenge[]> => {
-        const data = await Deno.readTextFile("./data/export/group_challenges.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/group_challenges.csv`);
         const groupChallenges: IGroupChallenge[] = parse(data, {
             columns: local_challenges_columns,
             skipFirstRow: true,
@@ -73,7 +73,7 @@ export default (folder: string) => ({
     },
 
     getGoals: async (): Promise<IGoal[]> => {
-        const data = await Deno.readTextFile("./data/export/goals.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/goals.csv`);
         const goals: IGoal[] = parse(data, {
             columns: goal_columns,
             skipFirstRow: true,
@@ -87,7 +87,7 @@ export default (folder: string) => ({
     },
 
     getFollowers: async (): Promise<IFollow[]> => {
-        const data = await Deno.readTextFile("./data/export/followers.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/followers.csv`);
         const followers: IFollow[] = parse(data, {
             columns: follow_columns,
             skipFirstRow: true,
@@ -101,7 +101,7 @@ export default (folder: string) => ({
     },
 
     getFollowing: async (): Promise<IFollow[]> => {
-        const data = await Deno.readTextFile("./data/export/following.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/following.csv`);
         const followers: IFollow[] = parse(data, {
             columns: follow_columns,
             skipFirstRow: true,
@@ -115,7 +115,7 @@ export default (folder: string) => ({
     },
 
     getClubs: async (): Promise<IClub[]> => {
-        const data = await Deno.readTextFile("./data/export/clubs.csv");
+        const data = await Deno.readTextFile(`./data/${folder}/clubs.csv`);
         const clubs: IClub[] = parse(data, {
             columns: clubs_columns,
             skipFirstRow: true,
