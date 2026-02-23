@@ -91,6 +91,11 @@ export default async function Layout(req: Request, ctx: FreshContext) {
                             Challenges &amp; Goals
                         </a>
                     </li>
+                    <li role="tab" selected={pathname == '/profile/user' ? true : undefined}>
+                        <a href="/profile/user">
+                            Profile
+                        </a>
+                    </li>
                     <li>
                         <button class="primary" onClick={"window.location.href = '/heatmap'"}>
                         View Heatmap {heatmapStatus  == "running" ? ": Processing" : ""}

@@ -1,5 +1,7 @@
 import { parse } from "@std/csv/parse";
 import clubs_columns from "./data/clubs-columns.ts";
+import application_columns from "./data/application-columns.ts";
+import connected_app_columns from "./data/connected-app-columns.ts";
 import event_columns from "./data/event-columns.ts";
 import profile_columns from "./data/profile-columns.ts";
 import media_columns from "./data/media-columns.ts";
@@ -7,7 +9,11 @@ import global_challenges_columns from "./data/global-challenges-columns.ts";
 import local_challenges_columns from "./data/group-challenges-columns.ts";
 import goal_columns from "./data/goal-columns.ts";
 import follow_columns from "./data/follow-columns.ts";
+import email_preferences_columns from "./data/email-preferences-columns.ts";
 import { fileExists } from "./helpers/fileExists.ts";
+import { IApplication } from "./interface/application.ts";
+import { IConnectedApp } from "./interface/connected_app.ts";
+import { IEmailPreference } from "./interface/email_preference.ts";
 import { IEvent } from "./interface/event.ts";
 import { IProfile } from "./interface/profile.ts";
 import { IMedia } from "./interface/media.ts";
@@ -148,5 +154,62 @@ export default (folder: string) => ({
         }) as any;
 
         return events;
+    },
+
+    getApplications: async (): Promise<IApplication[]> => {
+        const path = `./data/${folder}/applications.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const applications: IApplication[] = parse(data, {
+            columns: application_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return applications;
+    },
+
+    getConnectedApps: async (): Promise<IConnectedApp[]> => {
+        const path = `./data/${folder}/connected_apps.csv`;
+        if (!await fileExists(path)) {
+            return [];
+        }
+
+        const data = await Deno.readTextFile(path);
+        const connectedApps: IConnectedApp[] = parse(data, {
+            columns: connected_app_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any;
+
+        return connectedApps;
+    },
+
+    getEmailPreferences: async (): Promise<IEmailPreference | null> => {
+        const path = `./data/${folder}/email_preferences.csv`;
+        if (!await fileExists(path)) {
+            return null;
+        }
+
+        const data = await Deno.readTextFile(path);
+        const preferences = parse(data, {
+            columns: email_preferences_columns,
+            skipFirstRow: true,
+            skipEmptyLines: true,
+            trim: true,
+            delimiter: ',',
+            emptyValue: null
+        }) as any as IEmailPreference[];
+
+        return preferences[0] ?? null;
     }
 })

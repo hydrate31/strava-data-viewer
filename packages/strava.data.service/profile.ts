@@ -27,5 +27,14 @@ export default (folder: string) => ({
     },
     getEvents: async () => {
         return await reader(folder).profile.getEvents();
+    },
+    getApplications: async () => {
+        return await reader(folder).profile.getApplications();
+    },
+    getConnectedApps: async () => {
+        return await reader(folder).profile.getConnectedApps();
+    },
+    getEmailPreferences: async () => {
+        return await reader(folder).profile.getEmailPreferences();
     }
 })
