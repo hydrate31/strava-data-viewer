@@ -24,7 +24,7 @@ import * as $tasks from "./routes/tasks.tsx";
 import * as $training_activities_slug_ from "./routes/training/activities/[slug].tsx";
 import * as $training_my_activities from "./routes/training/my-activities.tsx";
 import * as $upload from "./routes/upload.tsx";
-
+import * as $UploadDropzone from "./islands/UploadDropzone.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -52,7 +52,9 @@ const manifest = {
     "./routes/training/my-activities.tsx": $training_my_activities,
     "./routes/upload.tsx": $upload,
   },
-  islands: {},
+  islands: {
+    "./islands/UploadDropzone.tsx": $UploadDropzone,
+  },
   baseUrl: import.meta.url,
 } satisfies Manifest;
 

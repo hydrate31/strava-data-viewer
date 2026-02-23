@@ -372,6 +372,51 @@ div.unit-row {
   display: block;
 }
 
+.upload-wizard-form {
+  max-width: 640px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.upload-file-input {
+  display: none;
+}
+
+.upload-drop-area {
+  width: 100%;
+  min-height: 180px;
+  border: 2px dashed #c5c9d3;
+  background-color: #f0f0f5;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #3a404c;
+  gap: 0.5em;
+  cursor: pointer;
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+.upload-drop-area.drag-active {
+  border-color: #fc5200;
+  background-color: #f6ece6;
+}
+
+.upload-select-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 table.compact-table > thead > tr > th,
 table.compact-table > tbody > tr > td {
   padding-inline: 10px;
