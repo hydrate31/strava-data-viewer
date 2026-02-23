@@ -317,3 +317,93 @@ div.unit-row {
   font-size: 0.72em;
   user-select: none;
 }
+
+.activity-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.metric-card {
+  border: 1px solid #dfdfe8;
+  background-color: white;
+  padding: 0.9em 1em;
+}
+
+.metric-card > h3 {
+  margin-top: 0;
+  margin-bottom: 0.6em;
+}
+
+.metric-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.elevation-interactive {
+  width: 100%;
+  margin-top: 0.6em;
+  border: 1px solid #dfdfe8;
+  background-color: white;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.elevation-chart-svg {
+  width: 100%;
+  height: 210px;
+  display: block;
+}
+
+.pace-interactive {
+  width: 100%;
+  margin-top: 0.35em;
+  border: 1px solid #dfdfe8;
+  background-color: white;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.pace-chart-svg {
+  width: 100%;
+  height: 110px;
+  display: block;
+}
+
+table.compact-table > thead > tr > th,
+table.compact-table > tbody > tr > td {
+  padding-inline: 10px;
+}
+
+ul.nearby-route-list {
+  margin: 0;
+  padding: 0;
+}
+
+ul.nearby-route-list > li {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f5;
+  padding: 6px 0;
+  gap: 0.8em;
+}
+
+ul.nearby-route-list > li > a {
+  color: #2f81c7;
+  text-decoration: none;
+}
+
+ul.nearby-route-list > li > span {
+  color: #6f6f79;
+  font-size: 0.85em;
+}
+
+@media (max-width: 980px) {
+  .activity-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
