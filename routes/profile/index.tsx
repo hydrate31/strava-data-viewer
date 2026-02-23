@@ -41,7 +41,7 @@ export const handler: Handlers<Props> = {
             clubs,
             events,
             comments,
-            blocks
+            blocks,
         });
     },
 

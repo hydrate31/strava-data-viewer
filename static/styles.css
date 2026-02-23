@@ -246,3 +246,8 @@ div.unit-row {
     }
   }
 }
+
+.data-health-page {
+  background-color: white;
+  padding: 1.2em;
+}

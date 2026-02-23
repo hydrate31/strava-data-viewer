@@ -7,6 +7,7 @@ import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $blog from "./routes/blog.tsx";
 import * as $dashboard_activity_feed from "./routes/dashboard/activity-feed.tsx";
+import * as $data_health from "./routes/data-health.tsx";
 import * as $heatmap from "./routes/heatmap.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile_layout from "./routes/profile/_layout.tsx";
@@ -32,6 +33,7 @@ const manifest = {
     "./routes/_middleware.ts": $_middleware,
     "./routes/blog.tsx": $blog,
     "./routes/dashboard/activity-feed.tsx": $dashboard_activity_feed,
+    "./routes/data-health.tsx": $data_health,
     "./routes/heatmap.tsx": $heatmap,
     "./routes/index.tsx": $index,
     "./routes/profile/_layout.tsx": $profile_layout,
