@@ -5,4 +5,5 @@ export enum TaskType {
   GenerateActivityImages,
   GenerateRouteImages,
   DataQualityScan,
+  DataQualityFix,
 }

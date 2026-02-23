@@ -7,6 +7,7 @@ import { routeImages } from "./tasks/generate-route-images.ts";
 import { activities } from "./tasks/process-activities.ts";
 import { athletes } from "./tasks/process-athletes.ts";
 import { dataQuality } from "./tasks/scan-data-quality.ts";
+import { dataQualityFix } from "./tasks/fix-data-quality.ts";
 
 const tasks = await Deno.openKv("./data/tasks");
 const statusKey = (
@@ -263,6 +264,15 @@ tasks.listenQueue(async (entry: QueueEntry) => {
         await dataQuality.scan(
           entry.userId,
           strava,
+          reportProgress,
+          throwIfCancelled,
+        );
+        break;
+      case TaskType.DataQualityFix:
+        await dataQualityFix.run(
+          entry.userId,
+          strava,
+          String(entry.payload?.action ?? ""),
           reportProgress,
           throwIfCancelled,
         );
