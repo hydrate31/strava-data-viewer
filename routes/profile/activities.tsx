@@ -354,10 +354,11 @@ export const handler: Handlers<Props> = {
 
 export const Activities = (props: PageProps<Props>) => (
   <>
-    <section>
-      <form method="post" encType="multipart/form-data">
+    <section class="page-toolbar">
+      <form method="post" encType="multipart/form-data" class="inline-form">
         <input type="hidden" name="action" value="regenerate_images" />
         <button
+          class="primary"
           type="submit"
           disabled={props.data.activityImagesStatus == "running"}
         >
@@ -369,7 +370,7 @@ export const Activities = (props: PageProps<Props>) => (
 
     <section>
       <h3>Filters</h3>
-      <form method="get">
+      <form method="get" class="filter-form">
         <input
           type="text"
           name="q"
@@ -404,13 +405,11 @@ export const Activities = (props: PageProps<Props>) => (
           placeholder="Max km"
           value={props.data.filters.max_distance}
         />
-        <button type="submit">Apply</button>
-        <a href="/profile/activities">
-          <button type="button">Reset</button>
-        </a>
+        <button type="submit" class="primary">Apply</button>
+        <a href="/profile/activities" class="button-link secondary">Reset</a>
       </form>
 
-      <form method="post">
+      <form method="post" class="saved-view-form">
         <input type="hidden" name="action" value="save_view" />
         <input type="hidden" name="q" value={props.data.filters.q} />
         <input type="hidden" name="sport" value={props.data.filters.sport} />
@@ -439,11 +438,11 @@ export const Activities = (props: PageProps<Props>) => (
           name="view_name"
           placeholder="Save current view as..."
         />
-        <button type="submit">Save View</button>
+        <button type="submit" class="primary">Save View</button>
       </form>
 
       {props.data.savedViews.length > 0 && (
-        <table>
+        <table class="compact-table">
           <thead>
             <tr>
               <th>Saved Views</th>
@@ -457,6 +456,7 @@ export const Activities = (props: PageProps<Props>) => (
                 <td>{view.name}</td>
                 <td>
                   <a
+                    class="button-link"
                     href={`/profile/activities?${
                       queryFromFilters(view.filters, 1, props.data.pageSize)
                     }`}

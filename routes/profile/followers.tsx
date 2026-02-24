@@ -180,16 +180,16 @@ export const handler: Handlers<Props> = {
 
 export const Followers = (props: PageProps<Props>) => (
   <>
-    <section>
-      <form method="POST">
+    <section class="page-toolbar">
+      <form method="POST" class="inline-form">
         <input type="hidden" name="action" value="reprocess_athletes" />
-        <button>Re-process Athletes</button>
+        <button class="primary">Re-process Athletes</button>
       </form>
     </section>
 
     <section>
       <h3>Filters</h3>
-      <form method="get">
+      <form method="get" class="filter-form">
         <input
           type="text"
           name="q"
@@ -222,13 +222,11 @@ export const Followers = (props: PageProps<Props>) => (
           placeholder="Max km"
           value={props.data.filters.max_distance}
         />
-        <button type="submit">Apply</button>
-        <a href="/profile/followers">
-          <button type="button">Reset</button>
-        </a>
+        <button type="submit" class="primary">Apply</button>
+        <a href="/profile/followers" class="button-link secondary">Reset</a>
       </form>
 
-      <form method="post">
+      <form method="post" class="saved-view-form">
         <input type="hidden" name="action" value="save_view" />
         <input type="hidden" name="q" value={props.data.filters.q} />
         <input
@@ -257,11 +255,11 @@ export const Followers = (props: PageProps<Props>) => (
           name="view_name"
           placeholder="Save current view as..."
         />
-        <button type="submit">Save View</button>
+        <button type="submit" class="primary">Save View</button>
       </form>
 
       {props.data.savedViews.length > 0 && (
-        <table>
+        <table class="compact-table">
           <thead>
             <tr>
               <th>Saved Views</th>
@@ -275,6 +273,7 @@ export const Followers = (props: PageProps<Props>) => (
                 <td>{view.name}</td>
                 <td>
                   <a
+                    class="button-link"
                     href={`/profile/followers?${
                       queryFromFilters(view.filters)
                     }`}

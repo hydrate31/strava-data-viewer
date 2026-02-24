@@ -49,7 +49,7 @@ ol.media-list {
   padding: 0;
   margin: 0;
 
-  > li { 
+  > li {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -60,7 +60,6 @@ ol.media-list {
 
     &:hover {
       opacity: 0.8;
-
     }
 
     img {
@@ -75,7 +74,6 @@ ol.media-list {
 table {
   width: 100%;
 }
-
 
 nav[role="tablist"] {
   display: flex;
@@ -121,9 +119,7 @@ nav[role="tablist"] {
       }
     }
   }
-
 }
-
 
 button {
   background-color: #f0f0f5;
@@ -243,19 +239,12 @@ details {
 }
 
 div.unit-row {
-
   > div.unit-display {
     display: grid;
-    
-    > span.value {
 
-    }
-    > span.unit {
-      
-    }
-    > span.description {
-      
-    }
+    > span.value {}
+    > span.unit {}
+    > span.description {}
   }
 }
 
@@ -316,6 +305,79 @@ div.unit-row {
   color: #7d7d87;
   font-size: 0.72em;
   user-select: none;
+}
+
+.page-toolbar {
+  margin-bottom: 0.8em;
+}
+
+.inline-form {
+  display: inline-flex;
+}
+
+.filter-form,
+.saved-view-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.filter-form input,
+.filter-form select,
+.saved-view-form input[type="text"] {
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 1px solid #d9dee8;
+  border-radius: 4px;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+.filter-form input[name="q"],
+.saved-view-form input[name="view_name"] {
+  min-width: 220px;
+}
+
+.filter-form input[name="min_distance"],
+.filter-form input[name="max_distance"] {
+  width: 130px;
+}
+
+button.secondary {
+  background-color: #e8e8ef;
+  border-color: #d6d6e0 !important;
+  color: #2f3542;
+}
+
+button.secondary:hover {
+  background-color: #dfdfe8;
+  border-color: #cfd2dd !important;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 2px 9px;
+  border: 1px solid #d6d6e0;
+  border-radius: 4px;
+  background-color: #f0f0f5;
+  color: #2f3542;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.button-link:hover {
+  background-color: #e1e1eb;
+  border-color: #cfd2dd;
+}
+
+.button-link.secondary {
+  background-color: #e8e8ef;
 }
 
 .activity-detail-grid {

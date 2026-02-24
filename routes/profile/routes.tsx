@@ -179,10 +179,14 @@ export const Routes = ({ data }: PageProps<Props>) => (
     <Head>
       <title>Routes</title>
     </Head>
-    <section>
-      <form method="post" encType="multipart/form-data">
+    <section class="page-toolbar">
+      <form method="post" encType="multipart/form-data" class="inline-form">
         <input type="hidden" name="action" value="regenerate_images" />
-        <button type="submit" disabled={data.routeImagesStatus == "running"}>
+        <button
+          class="primary"
+          type="submit"
+          disabled={data.routeImagesStatus == "running"}
+        >
           Regenerate Route Images{" "}
           {data.routeImagesStatus == "running" ? ": Processing" : ""}
         </button>
@@ -191,7 +195,7 @@ export const Routes = ({ data }: PageProps<Props>) => (
 
     <section>
       <h3>Filters</h3>
-      <form method="get">
+      <form method="get" class="filter-form">
         <input
           type="text"
           name="q"
@@ -220,13 +224,11 @@ export const Routes = ({ data }: PageProps<Props>) => (
           placeholder="Sport"
           value={data.filters.sport}
         />
-        <button type="submit">Apply</button>
-        <a href="/profile/routes">
-          <button type="button">Reset</button>
-        </a>
+        <button type="submit" class="primary">Apply</button>
+        <a href="/profile/routes" class="button-link secondary">Reset</a>
       </form>
 
-      <form method="post">
+      <form method="post" class="saved-view-form">
         <input type="hidden" name="action" value="save_view" />
         <input type="hidden" name="q" value={data.filters.q} />
         <input type="hidden" name="date_from" value={data.filters.date_from} />
@@ -247,11 +249,11 @@ export const Routes = ({ data }: PageProps<Props>) => (
           name="view_name"
           placeholder="Save current view as..."
         />
-        <button type="submit">Save View</button>
+        <button type="submit" class="primary">Save View</button>
       </form>
 
       {data.savedViews.length > 0 && (
-        <table>
+        <table class="compact-table">
           <thead>
             <tr>
               <th>Saved Views</th>
@@ -264,7 +266,10 @@ export const Routes = ({ data }: PageProps<Props>) => (
               <tr>
                 <td>{view.name}</td>
                 <td>
-                  <a href={`/profile/routes?${queryFromFilters(view.filters)}`}>
+                  <a
+                    class="button-link"
+                    href={`/profile/routes?${queryFromFilters(view.filters)}`}
+                  >
                     Open
                   </a>
                 </td>
