@@ -45,7 +45,68 @@ const statusClassName = (status: string) =>
 
 export default function TasksTable({ initialTasks }: TasksTableProps) {
   const [tasks, setTasks] = useState<TaskRow[]>(initialTasks);
+  const [pendingTaskTypes, setPendingTaskTypes] = useState<Set<TaskType>>(
+    new Set(),
+  );
   const tableRef = useRef<HTMLTableElement>(null);
+
+  const markPending = (taskType: TaskType) => {
+    setPendingTaskTypes((prev) => {
+      const next = new Set(prev);
+      next.add(taskType);
+      return next;
+    });
+  };
+
+  const clearPending = (taskType: TaskType) => {
+    setPendingTaskTypes((prev) => {
+      const next = new Set(prev);
+      next.delete(taskType);
+      return next;
+    });
+  };
+
+  const applyOptimisticState = (
+    taskType: TaskType,
+    patch: Partial<TaskRow["state"]>,
+  ) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.type === taskType
+          ? {
+            ...task,
+            state: {
+              ...task.state,
+              ...patch,
+              updatedAt: new Date().toISOString(),
+            },
+          }
+          : task
+      )
+    );
+  };
+
+  const postTaskAction = async (
+    taskType: TaskType,
+    action: "run" | "force_stop",
+    fixAction?: DataQualityFixAction,
+  ) => {
+    const form = new FormData();
+    form.set("task_type", String(taskType));
+    form.set("action", action);
+    if (action === "force_stop") form.set("confirm_force_stop", "yes");
+    if (fixAction) form.set("fix_action", fixAction);
+
+    markPending(taskType);
+
+    try {
+      await fetch("/tasks", { method: "POST", body: form });
+    } catch {
+      // Polling will eventually reconcile state with server.
+    } finally {
+      clearPending(taskType);
+    }
+  };
 
   useEffect(() => {
     const isUserInteracting = () => {
@@ -92,7 +153,7 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
         </thead>
         <tbody>
           {tasks.map((task) => (
-            <tr>
+            <tr class={pendingTaskTypes.has(task.type) ? "optimistic-row" : ""}>
               <td data-label="Task">{task.name}</td>
               <td data-label="Status">
                 <span class={statusClassName(task.state.status)}>
@@ -127,14 +188,23 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
                 {task.state.status === "running" && (
                   <form
                     method="post"
-                    onSubmit={(event) => {
+                    onSubmit={async (event) => {
+                      event.preventDefault();
                       if (
                         !globalThis.confirm(
                           "Force stop this task? This will request cancellation immediately.",
                         )
                       ) {
-                        event.preventDefault();
+                        return;
                       }
+
+                      applyOptimisticState(task.type, {
+                        status: "idle",
+                        percentage: 0,
+                        startedAt: null,
+                        error: null,
+                      });
+                      await postTaskAction(task.type, "force_stop");
                     }}
                   >
                     <input
@@ -148,13 +218,37 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
                       name="confirm_force_stop"
                       value="yes"
                     />
-                    <button type="submit" class="danger">Force Stop</button>
+                    <button
+                      type="submit"
+                      class="danger"
+                      disabled={pendingTaskTypes.has(task.type)}
+                    >
+                      {pendingTaskTypes.has(task.type)
+                        ? "Stopping..."
+                        : "Force Stop"}
+                    </button>
                   </form>
                 )}
 
                 {task.state.status !== "running" &&
                   task.type === TaskType.DataQualityFix && (
-                  <form method="post">
+                  <form
+                    method="post"
+                    onSubmit={async (event) => {
+                      event.preventDefault();
+                      const form = event.currentTarget as HTMLFormElement;
+                      const formData = new FormData(form);
+                      const fixAction =
+                        (formData.get("fix_action")?.toString() ??
+                          "dedupe_activities") as DataQualityFixAction;
+                      applyOptimisticState(task.type, {
+                        status: "queued",
+                        percentage: Math.max(1, task.state.percentage),
+                        error: null,
+                      });
+                      await postTaskAction(task.type, "run", fixAction);
+                    }}
+                  >
                     <input
                       type="hidden"
                       name="task_type"
@@ -168,16 +262,28 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
                     </select>
                     <button
                       type="submit"
-                      disabled={task.state.status === "queued"}
+                      disabled={task.state.status === "queued" ||
+                        pendingTaskTypes.has(task.type)}
                     >
-                      Run
+                      {pendingTaskTypes.has(task.type) ? "Queueing..." : "Run"}
                     </button>
                   </form>
                 )}
 
                 {task.state.status !== "running" &&
                   task.type !== TaskType.DataQualityFix && (
-                  <form method="post">
+                  <form
+                    method="post"
+                    onSubmit={async (event) => {
+                      event.preventDefault();
+                      applyOptimisticState(task.type, {
+                        status: "queued",
+                        percentage: Math.max(1, task.state.percentage),
+                        error: null,
+                      });
+                      await postTaskAction(task.type, "run");
+                    }}
+                  >
                     <input
                       type="hidden"
                       name="task_type"
@@ -186,9 +292,10 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
                     <input type="hidden" name="action" value="run" />
                     <button
                       type="submit"
-                      disabled={task.state.status === "queued"}
+                      disabled={task.state.status === "queued" ||
+                        pendingTaskTypes.has(task.type)}
                     >
-                      Run
+                      {pendingTaskTypes.has(task.type) ? "Queueing..." : "Run"}
                     </button>
                   </form>
                 )}

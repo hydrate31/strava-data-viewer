@@ -689,6 +689,58 @@ ul.nearby-route-list > li > span {
   margin-right: 0.5em;
 }
 
+.optimistic-row {
+  opacity: 0.72;
+}
+
+.skeleton-row td {
+  pointer-events: none;
+}
+
+.skeleton-line,
+.skeleton-box {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-muted);
+}
+
+.skeleton-line {
+  height: 10px;
+  width: 100%;
+}
+
+.skeleton-line.short {
+  width: 58%;
+}
+
+.skeleton-box {
+  width: 96px;
+  height: 56px;
+}
+
+.skeleton-line::after,
+.skeleton-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: skeleton-shimmer 1.25s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .map-canvas {
   width: 100%;
   height: 24rem;

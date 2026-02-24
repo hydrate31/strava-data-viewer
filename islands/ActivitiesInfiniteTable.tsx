@@ -210,12 +210,38 @@ export default function ActivitiesInfiniteTable(
                   </td>
                 </tr>
               ))}
+              {loading && hasMore &&
+                Array.from({ length: 4 }).map((_, index) => (
+                  <tr class="skeleton-row" key={`activity-skeleton-${index}`}>
+                    <td data-label="Map">
+                      <span class="skeleton-box" />
+                    </td>
+                    <td data-label="Sport">
+                      <span class="skeleton-line short" />
+                    </td>
+                    <td data-label="Date">
+                      <span class="skeleton-line" />
+                    </td>
+                    <td data-label="Title">
+                      <span class="skeleton-line" />
+                    </td>
+                    <td data-label="Time">
+                      <span class="skeleton-line short" />
+                    </td>
+                    <td data-label="Distance">
+                      <span class="skeleton-line short" />
+                    </td>
+                    <td data-label="Elevation">
+                      <span class="skeleton-line short" />
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
       )}
       <div ref={loadingRef} class="infinite-scroll-sentinel">
-        {loading && <span>Loading more...</span>}
+        {loading && <span>Loading more activities...</span>}
         {!loading && !hasMore && filteredActivities > 0 && (
           <span>All activities loaded.</span>
         )}
