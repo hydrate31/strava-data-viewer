@@ -5,6 +5,7 @@ import { IMedia } from "../../packages/strava.export-data-reader/interface/media
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import { IGoal } from "../../packages/strava.export-data-reader/interface/goal.ts";
 import { ISegment } from "../../packages/strava.export-data-reader/interface/segment.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   profile: IProfile;
@@ -64,7 +65,16 @@ export const Segments = (props: PageProps<Props>) => (
         </table>
       </div>
     )}
-    {props.data.segments.length == 0 && <p>None</p>}
+    {props.data.segments.length == 0 && (
+      <StatePanel
+        title="No segments found"
+        description="Your export did not include segment records."
+        actions={[
+          { href: "/upload", label: "Re-import data", primary: true },
+          { href: "/profile/routes", label: "View routes" },
+        ]}
+      />
+    )}
   </>
 );
 

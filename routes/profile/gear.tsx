@@ -5,6 +5,7 @@ import { IComponent } from "../../packages/strava.export-data-reader/interface/c
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import { IShoe } from "../../packages/strava.export-data-reader/interface/shoe.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   profile: IProfile;
@@ -40,28 +41,40 @@ export const Gear = ({ data }: PageProps<Props>) => (
   <>
     <section>
       <h2>My Bikes</h2>
-      <div class="table-scroll">
-        <table class="responsive-table">
-          <thead>
-            <tr>
-              <th>Nickname</th>
-              <th>Brand</th>
-              <th>Model</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.bikes.map((bike) => (
+      {data.bikes.length > 0 && (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td data-label="Nickname">{bike.name}</td>
-                <td data-label="Brand">{bike.brand}</td>
-                <td data-label="Model">{bike.model}</td>
-                <td data-label="Type">{bike.default_sport_types}</td>
+                <th>Nickname</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Type</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {data.bikes.map((bike) => (
+                <tr>
+                  <td data-label="Nickname">{bike.name}</td>
+                  <td data-label="Brand">{bike.brand}</td>
+                  <td data-label="Model">{bike.model}</td>
+                  <td data-label="Type">{bike.default_sport_types}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {data.bikes.length == 0 && (
+        <StatePanel
+          title="No bikes found"
+          description="No bike records were found in this export."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/gear", label: "Reload gear page" },
+          ]}
+        />
+      )}
     </section>
     <br />
 
@@ -91,34 +104,55 @@ export const Gear = ({ data }: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {data.components.length == 0 && <p>None</p>}
+      {data.components.length == 0 && (
+        <StatePanel
+          title="No components found"
+          description="No bike component records were found in this export."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/gear", label: "Reload gear page" },
+          ]}
+        />
+      )}
     </section>
     <br />
 
     <section>
       <h2>My Shoes</h2>
-      <div class="table-scroll">
-        <table class="responsive-table">
-          <thead>
-            <tr>
-              <th>Nickname</th>
-              <th>Brand</th>
-              <th>Model</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.shoes.map((shoe) => (
+      {data.shoes.length > 0 && (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td data-label="Nickname">{shoe.name}</td>
-                <td data-label="Brand">{shoe.brand}</td>
-                <td data-label="Model">{shoe.model}</td>
-                <td data-label="Type">{shoe.default_sport_types}</td>
+                <th>Nickname</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Type</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {data.shoes.map((shoe) => (
+                <tr>
+                  <td data-label="Nickname">{shoe.name}</td>
+                  <td data-label="Brand">{shoe.brand}</td>
+                  <td data-label="Model">{shoe.model}</td>
+                  <td data-label="Type">{shoe.default_sport_types}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {data.shoes.length == 0 && (
+        <StatePanel
+          title="No shoes found"
+          description="No shoe records were found in this export."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/gear", label: "Reload gear page" },
+          ]}
+        />
+      )}
     </section>
   </>
 );

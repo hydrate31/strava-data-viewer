@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import StatePanel from "../components/StatePanel.tsx";
 
 interface ActivityFilters {
   q: string;
@@ -143,59 +144,76 @@ export default function ActivitiesInfiniteTable(
         {filteredActivities > 0 &&
           `Showing 1-${activities.length} of ${filteredActivities} filtered activities (${totalActivities} total)`}
       </h3>
-      <div class="table-scroll">
-        <table class="responsive-table">
-          <thead>
-            <tr>
-              <th>Map</th>
-              <th>Sport</th>
-              <th>Date</th>
-              <th>Title</th>
-              <th>Time</th>
-              <th>Distance</th>
-              <th>Elevation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {activities.map((activity) => (
+      {filteredActivities === 0 && (
+        <StatePanel
+          title="No activities match current filters"
+          description="Try clearing filters or re-importing data if you expect activities here."
+          actions={[
+            {
+              href: "/profile/activities",
+              label: "Clear filters",
+              primary: true,
+            },
+            { href: "/upload", label: "Re-import data" },
+          ]}
+        />
+      )}
+      {filteredActivities > 0 && (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td data-label="Map">
-                  <div class="thumbnail-frame">
-                    {activity.hasImage && (
-                      <img
-                        class="thumbnail-image"
-                        src={`/activity-images/${activity.activity_id}.svg?v=${activityImageVersion}`}
-                        alt={`Route for ${activity.activity_name}`}
-                        loading="lazy"
-                      />
-                    )}
-                    {!activity.hasImage && (
-                      <span class="thumbnail-placeholder">No map</span>
-                    )}
-                  </div>
-                </td>
-                <td data-label="Sport">{activity.activity_type}</td>
-                <td data-label="Date">{activity.activity_date}</td>
-                <td data-label="Title">
-                  <a href={`/training/activities/${activity.activity_id}`}>
-                    {activity.activity_name}
-                  </a>
-                </td>
-                <td data-label="Time">
-                  {time.getHours(parseInt(activity.elapsed_time, 10)) + "h " +
-                    time.getMinutes(parseInt(activity.elapsed_time, 10)) +
-                    "m " +
-                    time.getSeconds(parseInt(activity.elapsed_time, 10)) + "s"}
-                </td>
-                <td data-label="Distance">{activity.distance + " km"}</td>
-                <td data-label="Elevation">
-                  {Math.floor(Number(activity.elevation_gain) || 0) + "ft"}
-                </td>
+                <th>Map</th>
+                <th>Sport</th>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Time</th>
+                <th>Distance</th>
+                <th>Elevation</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {activities.map((activity) => (
+                <tr>
+                  <td data-label="Map">
+                    <div class="thumbnail-frame">
+                      {activity.hasImage && (
+                        <img
+                          class="thumbnail-image"
+                          src={`/activity-images/${activity.activity_id}.svg?v=${activityImageVersion}`}
+                          alt={`Route for ${activity.activity_name}`}
+                          loading="lazy"
+                        />
+                      )}
+                      {!activity.hasImage && (
+                        <span class="thumbnail-placeholder">No map</span>
+                      )}
+                    </div>
+                  </td>
+                  <td data-label="Sport">{activity.activity_type}</td>
+                  <td data-label="Date">{activity.activity_date}</td>
+                  <td data-label="Title">
+                    <a href={`/training/activities/${activity.activity_id}`}>
+                      {activity.activity_name}
+                    </a>
+                  </td>
+                  <td data-label="Time">
+                    {time.getHours(parseInt(activity.elapsed_time, 10)) + "h " +
+                      time.getMinutes(parseInt(activity.elapsed_time, 10)) +
+                      "m " +
+                      time.getSeconds(parseInt(activity.elapsed_time, 10)) +
+                      "s"}
+                  </td>
+                  <td data-label="Distance">{activity.distance + " km"}</td>
+                  <td data-label="Elevation">
+                    {Math.floor(Number(activity.elevation_gain) || 0) + "ft"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div ref={loadingRef} class="infinite-scroll-sentinel">
         {loading && <span>Loading more...</span>}
         {!loading && !hasMore && filteredActivities > 0 && (

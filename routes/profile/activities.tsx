@@ -8,6 +8,7 @@ import { IClub } from "../../packages/strava.export-data-reader/interface/club.t
 import { IFollow } from "../../packages/strava.export-data-reader/interface/follow.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 import {
   deleteView,
   listSavedViews,
@@ -510,9 +511,14 @@ export const Activities = (props: PageProps<Props>) => (
       )}
 
       {props.data.message && (
-        <p>
-          <strong>{props.data.message}</strong>
-        </p>
+        <StatePanel
+          kind="info"
+          title={props.data.message}
+          actions={[
+            { href: "/profile/activities", label: "Refresh", primary: true },
+            { href: "/tasks", label: "Open Tasks" },
+          ]}
+        />
       )}
     </section>
 

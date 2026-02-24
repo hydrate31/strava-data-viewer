@@ -6,6 +6,7 @@ import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import { IRoute } from "../../packages/strava.export-data-reader/interface/route.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 import {
   deleteView,
   listSavedViews,
@@ -315,56 +316,77 @@ export const Routes = ({ data }: PageProps<Props>) => (
       )}
 
       {data.message && (
-        <p>
-          <strong>{data.message}</strong>
-        </p>
+        <StatePanel
+          kind="info"
+          title={data.message}
+          actions={[
+            { href: "/profile/routes", label: "Refresh", primary: true },
+            { href: "/tasks", label: "Open Tasks" },
+          ]}
+        />
       )}
     </section>
 
-    <div class="table-scroll">
-      <table class="responsive-table">
-        <thead>
-          <tr>
-            <th>Map</th>
-            <th>Name</th>
-            <th>File</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.routes.map((route) => (
+    {data.routes.length > 0 && (
+      <div class="table-scroll">
+        <table class="responsive-table">
+          <thead>
             <tr>
-              <td data-label="Map">
-                <div class="thumbnail-frame">
-                  {data.routeImageIds.includes(routeImageId(route.filename)) &&
-                    (
-                      <img
-                        class="thumbnail-image"
-                        src={`/route-images/${
-                          routeImageId(route.filename)
-                        }.svg?v=${data.routeImageVersion}`}
-                        alt={`Route image for ${route.name}`}
-                        loading="lazy"
-                      />
-                    )}
-                  {!data.routeImageIds.includes(routeImageId(route.filename)) &&
-                    <span class="thumbnail-placeholder">No map</span>}
-                </div>
-              </td>
-              <td data-label="Name">
-                <a
-                  href={`/routes/${
-                    route.filename.replace("routes/", "").replace(".gpx", "")
-                  }`}
-                >
-                  {route.name}
-                </a>
-              </td>
-              <td data-label="File">{route.filename}</td>
+              <th>Map</th>
+              <th>Name</th>
+              <th>File</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {data.routes.map((route) => (
+              <tr>
+                <td data-label="Map">
+                  <div class="thumbnail-frame">
+                    {data.routeImageIds.includes(
+                      routeImageId(route.filename),
+                    ) &&
+                      (
+                        <img
+                          class="thumbnail-image"
+                          src={`/route-images/${
+                            routeImageId(route.filename)
+                          }.svg?v=${data.routeImageVersion}`}
+                          alt={`Route image for ${route.name}`}
+                          loading="lazy"
+                        />
+                      )}
+                    {!data.routeImageIds.includes(
+                      routeImageId(route.filename),
+                    ) &&
+                      <span class="thumbnail-placeholder">No map</span>}
+                  </div>
+                </td>
+                <td data-label="Name">
+                  <a
+                    href={`/routes/${
+                      route.filename.replace("routes/", "").replace(".gpx", "")
+                    }`}
+                  >
+                    {route.name}
+                  </a>
+                </td>
+                <td data-label="File">{route.filename}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    {data.routes.length == 0 && (
+      <StatePanel
+        title="No routes found"
+        description="No route records are available for this export."
+        actions={[
+          { href: "/upload", label: "Re-import data", primary: true },
+          { href: "/profile/routes", label: "Reset filters" },
+        ]}
+      />
+    )}
   </>
 );
 

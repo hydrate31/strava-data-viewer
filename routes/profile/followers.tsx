@@ -8,6 +8,7 @@ import { IFollow } from "../../packages/strava.export-data-reader/interface/foll
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import { IAthlete } from "../../packages/strava.wget.service/athletes.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 import {
   deleteView,
   listSavedViews,
@@ -327,9 +328,14 @@ export const Followers = (props: PageProps<Props>) => (
       )}
 
       {props.data.message && (
-        <p>
-          <strong>{props.data.message}</strong>
-        </p>
+        <StatePanel
+          kind="info"
+          title={props.data.message}
+          actions={[
+            { href: "/tasks", label: "Open Tasks", primary: true },
+            { href: "/profile/followers", label: "Refresh" },
+          ]}
+        />
       )}
     </section>
 
@@ -381,7 +387,20 @@ export const Followers = (props: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {props.data.following.length == 0 && <p>None</p>}
+      {props.data.following.length == 0 && (
+        <StatePanel
+          title="No following records found"
+          description="No following entries are available for this export."
+          actions={[
+            {
+              href: "/profile/followers",
+              label: "Re-process athletes",
+              primary: true,
+            },
+            { href: "/upload", label: "Re-import data" },
+          ]}
+        />
+      )}
       <br />
 
       <h3>Followers</h3>
@@ -424,7 +443,20 @@ export const Followers = (props: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {props.data.followers.length == 0 && <p>None</p>}
+      {props.data.followers.length == 0 && (
+        <StatePanel
+          title="No follower records found"
+          description="No follower entries are available for this export."
+          actions={[
+            {
+              href: "/profile/followers",
+              label: "Re-process athletes",
+              primary: true,
+            },
+            { href: "/upload", label: "Re-import data" },
+          ]}
+        />
+      )}
     </section>
   </>
 );

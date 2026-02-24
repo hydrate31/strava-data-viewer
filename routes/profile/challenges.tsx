@@ -9,6 +9,7 @@ import { IProfile } from "../../packages/strava.export-data-reader/interface/pro
 import { IGlobalChallenge } from "../../packages/strava.export-data-reader/interface/global-challenges.ts";
 import { IGroupChallenge } from "../../packages/strava.export-data-reader/interface/group-challenges.ts";
 import { IGoal } from "../../packages/strava.export-data-reader/interface/goal.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   activities: IActivity[];
@@ -76,7 +77,16 @@ export const Challenges = (props: PageProps<Props>) => (
         </table>
       </div>
     )}
-    {props.data.challenges.global.length == 0 && <p>None</p>}
+    {props.data.challenges.global.length == 0 && (
+      <StatePanel
+        title="No global challenges found"
+        description="No global challenge rows were found in this export."
+        actions={[
+          { href: "/upload", label: "Re-import data", primary: true },
+          { href: "/profile/activities", label: "View activities" },
+        ]}
+      />
+    )}
     <br />
 
     <h3>Group</h3>
@@ -102,7 +112,16 @@ export const Challenges = (props: PageProps<Props>) => (
         </table>
       </div>
     )}
-    {props.data.challenges.group.length == 0 && <p>None</p>}
+    {props.data.challenges.group.length == 0 && (
+      <StatePanel
+        title="No group challenges found"
+        description="No group challenge rows were found in this export."
+        actions={[
+          { href: "/upload", label: "Re-import data", primary: true },
+          { href: "/profile/activities", label: "View activities" },
+        ]}
+      />
+    )}
     <br />
 
     <h2>Goals</h2>
@@ -138,7 +157,16 @@ export const Challenges = (props: PageProps<Props>) => (
         </table>
       </div>
     )}
-    {props.data.goals.length == 0 && <p>None</p>}
+    {props.data.goals.length == 0 && (
+      <StatePanel
+        title="No goals found"
+        description="No goal records are currently available in this export."
+        actions={[
+          { href: "/upload", label: "Re-import data", primary: true },
+          { href: "/profile/stats", label: "Open stats" },
+        ]}
+      />
+    )}
   </>
 );
 

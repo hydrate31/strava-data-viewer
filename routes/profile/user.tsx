@@ -6,6 +6,7 @@ import { IConnectedApp } from "../../packages/strava.export-data-reader/interfac
 import { IEmailPreference } from "../../packages/strava.export-data-reader/interface/email_preference.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   profile: IProfile;
@@ -81,7 +82,16 @@ export const User = ({ data }: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {data.connectedApps.length == 0 && <p>None</p>}
+      {data.connectedApps.length == 0 && (
+        <StatePanel
+          title="No connected apps found"
+          description="Your export does not include connected app entries."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/data-health", label: "Open Data Health" },
+          ]}
+        />
+      )}
     </section>
     <br />
 
@@ -107,7 +117,16 @@ export const User = ({ data }: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {data.applications.length == 0 && <p>None</p>}
+      {data.applications.length == 0 && (
+        <StatePanel
+          title="No applications found"
+          description="No authorized application records were found in this export."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile", label: "Back to overview" },
+          ]}
+        />
+      )}
     </section>
     <br />
 
@@ -139,7 +158,16 @@ export const User = ({ data }: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {!data.emailPreferences && <p>None</p>}
+      {!data.emailPreferences && (
+        <StatePanel
+          title="No email preferences found"
+          description="Email preference data is missing in this export."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/data-health", label: "Check dataset health" },
+          ]}
+        />
+      )}
     </section>
   </>
 );

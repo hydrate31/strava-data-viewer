@@ -11,6 +11,7 @@ import {
   type QualityIssue,
 } from "../packages/sdev.tasks/tasks/scan-data-quality.ts";
 import { type DataQualityFixAction } from "../packages/sdev.tasks/tasks/fix-data-quality.ts";
+import StatePanel from "../components/StatePanel.tsx";
 
 type DatasetHealth = {
   name: string;
@@ -430,9 +431,14 @@ export const DataHealth = (props: PageProps<Props>) => {
             <code>.quality-backups/</code>.
           </p>
           {props.data.message && (
-            <p>
-              <strong>{props.data.message}</strong>
-            </p>
+            <StatePanel
+              kind="info"
+              title={props.data.message}
+              actions={[
+                { href: "/data-health", label: "Refresh", primary: true },
+                { href: "/tasks", label: "Open Tasks" },
+              ]}
+            />
           )}
           <div class="table-scroll">
             <table class="responsive-table">

@@ -1,6 +1,7 @@
 import { FreshContext, Handlers, PageProps } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IActivity } from "../../packages/strava.export-data-reader/interface/activity.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   insights: {
@@ -315,7 +316,20 @@ export default function Stats({ data }: PageProps<Props>) {
               </table>
             </div>
           )}
-          {data.insights.sportDistribution.length == 0 && <p>None</p>}
+          {data.insights.sportDistribution.length == 0 && (
+            <StatePanel
+              title="No sport distribution data"
+              description="No activities were available to build distribution insights."
+              actions={[
+                {
+                  href: "/profile/activities",
+                  label: "Open activities",
+                  primary: true,
+                },
+                { href: "/upload", label: "Re-import data" },
+              ]}
+            />
+          )}
         </article>
       </div>
 
@@ -344,7 +358,20 @@ export default function Stats({ data }: PageProps<Props>) {
               </table>
             </div>
           )}
-          {data.insights.weekly.length == 0 && <p>None</p>}
+          {data.insights.weekly.length == 0 && (
+            <StatePanel
+              title="No weekly trend data"
+              description="Insufficient activities are available for weekly trend generation."
+              actions={[
+                {
+                  href: "/profile/activities",
+                  label: "Open activities",
+                  primary: true,
+                },
+                { href: "/upload", label: "Re-import data" },
+              ]}
+            />
+          )}
         </article>
 
         <article>
@@ -371,7 +398,20 @@ export default function Stats({ data }: PageProps<Props>) {
               </table>
             </div>
           )}
-          {data.insights.monthly.length == 0 && <p>None</p>}
+          {data.insights.monthly.length == 0 && (
+            <StatePanel
+              title="No monthly trend data"
+              description="Insufficient activities are available for monthly trend generation."
+              actions={[
+                {
+                  href: "/profile/activities",
+                  label: "Open activities",
+                  primary: true,
+                },
+                { href: "/upload", label: "Re-import data" },
+              ]}
+            />
+          )}
         </article>
       </div>
 
@@ -401,7 +441,20 @@ export default function Stats({ data }: PageProps<Props>) {
             </table>
           </div>
         )}
-        {data.insights.prTimeline.length == 0 && <p>None</p>}
+        {data.insights.prTimeline.length == 0 && (
+          <StatePanel
+            title="No PR timeline data"
+            description="No progression events were found for PR timeline generation."
+            actions={[
+              {
+                href: "/profile/activities",
+                label: "Open activities",
+                primary: true,
+              },
+              { href: "/upload", label: "Re-import data" },
+            ]}
+          />
+        )}
       </article>
     </section>
   );

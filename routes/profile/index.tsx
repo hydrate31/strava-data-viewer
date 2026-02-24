@@ -8,6 +8,7 @@ import { IEvent } from "../../packages/strava.export-data-reader/interface/event
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import sdevTasks from "../../packages/sdev.tasks/index.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 interface Props {
   profile: IProfile;
@@ -138,7 +139,16 @@ export const Overview = (props: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {props.data.events.length == 0 && <p>None</p>}
+      {props.data.events.length == 0 && (
+        <StatePanel
+          title="No events found"
+          description="This export did not include event rows."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/activities", label: "View activities" },
+          ]}
+        />
+      )}
     </section>
 
     <section>
@@ -176,7 +186,16 @@ export const Overview = (props: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {props.data.comments.length == 0 && <p>None</p>}
+      {props.data.comments.length == 0 && (
+        <StatePanel
+          title="No comments found"
+          description="No profile comment records were found."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/followers", label: "Open followers" },
+          ]}
+        />
+      )}
     </section>
 
     <section>
@@ -201,7 +220,16 @@ export const Overview = (props: PageProps<Props>) => (
           </table>
         </div>
       )}
-      {props.data.blocks.length == 0 && <p>None</p>}
+      {props.data.blocks.length == 0 && (
+        <StatePanel
+          title="No blocks found"
+          description="No blocked-athlete records were found."
+          actions={[
+            { href: "/upload", label: "Re-import data", primary: true },
+            { href: "/profile/followers", label: "Open followers" },
+          ]}
+        />
+      )}
     </section>
   </>
 );

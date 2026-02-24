@@ -7,6 +7,7 @@ import { TaskType } from "../packages/sdev.tasks/interfaces/task-type.ts";
 import { QueueEntry } from "../packages/sdev.tasks/interfaces/queue-entry.ts";
 import UploadDropzone from "../islands/UploadDropzone.tsx";
 import TimeAgo from "../components/TimeAgo.tsx";
+import StatePanel from "../components/StatePanel.tsx";
 
 type ImportStage =
   | "uploaded"
@@ -405,6 +406,9 @@ const ImportProgress = ({ state }: { state: ImportState }) => (
 
 export default function UploadPage({ data }: PageProps<Props>) {
   const state = data.importState;
+  const isErrorMessage = (data.message ?? "").toLowerCase().includes("error") ||
+    (data.message ?? "").toLowerCase().includes("failed") ||
+    (data.message ?? "").toLowerCase().includes("unknown action");
 
   return (
     <>
@@ -575,7 +579,16 @@ export default function UploadPage({ data }: PageProps<Props>) {
         </section>
       )}
 
-      <p>{data.message ?? ""}</p>
+      {data.message && (
+        <StatePanel
+          kind={isErrorMessage ? "error" : "info"}
+          title={data.message}
+          actions={[
+            { href: "/upload", label: "Refresh", primary: true },
+            { href: "/tasks", label: "Open Tasks" },
+          ]}
+        />
+      )}
 
       <p>
         If you are repeatedly redirected here, either no valid export is

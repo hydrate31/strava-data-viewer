@@ -1,6 +1,7 @@
 import { Head } from "$fresh/runtime.ts";
 import { FreshContext, Handlers, PageProps } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
+import StatePanel from "../../components/StatePanel.tsx";
 
 import { IActivity } from "../../packages/strava.export-data-reader/interface/activity.ts";
 
@@ -31,42 +32,54 @@ export const MyActivities = (props: PageProps<Props>) => (
     </Head>
     <h2>My Activities</h2>
     <h3>{props.data.activities?.length ?? 0} Activities</h3>
-    <div class="table-scroll">
-      <table class="responsive-table">
-        <thead>
-          <tr>
-            <th>Sport</th>
-            <th>Date</th>
-            <th>Title</th>
-            <th>Time</th>
-            <th>Distance</th>
-            <th>Elevation</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.data.activities.map((activity: any) => (
+    {props.data.activities.length == 0 && (
+      <StatePanel
+        title="No activities found"
+        description="No activity rows are currently available for this user."
+        actions={[
+          { href: "/upload", label: "Import export zip", primary: true },
+          { href: "/profile/activities", label: "Open profile activities" },
+        ]}
+      />
+    )}
+    {props.data.activities.length > 0 && (
+      <div class="table-scroll">
+        <table class="responsive-table">
+          <thead>
             <tr>
-              <td data-label="Sport">{activity.activity_type}</td>
-              <td data-label="Date">{activity.activity_date}</td>
-              <td data-label="Title">
-                <a href={`/training/activities/${activity.activity_id}`}>
-                  {activity.activity_name}
-                </a>
-              </td>
-              <td data-label="Time">
-                {time.getHours(parseInt(activity.elapsed_time)) + "h " +
-                  time.getMinutes(parseInt(activity.elapsed_time)) + "m " +
-                  time.getSeconds(parseInt(activity.elapsed_time)) + "s"}
-              </td>
-              <td data-label="Distance">{activity.distance + " km"}</td>
-              <td data-label="Elevation">
-                {Math.floor(activity.elevation_gain) + "ft"}
-              </td>
+              <th>Sport</th>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Time</th>
+              <th>Distance</th>
+              <th>Elevation</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {props.data.activities.map((activity: any) => (
+              <tr>
+                <td data-label="Sport">{activity.activity_type}</td>
+                <td data-label="Date">{activity.activity_date}</td>
+                <td data-label="Title">
+                  <a href={`/training/activities/${activity.activity_id}`}>
+                    {activity.activity_name}
+                  </a>
+                </td>
+                <td data-label="Time">
+                  {time.getHours(parseInt(activity.elapsed_time)) + "h " +
+                    time.getMinutes(parseInt(activity.elapsed_time)) + "m " +
+                    time.getSeconds(parseInt(activity.elapsed_time)) + "s"}
+                </td>
+                <td data-label="Distance">{activity.distance + " km"}</td>
+                <td data-label="Elevation">
+                  {Math.floor(activity.elevation_gain) + "ft"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
   </>
 );
 
