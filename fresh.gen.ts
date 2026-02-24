@@ -18,6 +18,7 @@ import * as $profile_gear from "./routes/profile/gear.tsx";
 import * as $profile_index from "./routes/profile/index.tsx";
 import * as $profile_routes from "./routes/profile/routes.tsx";
 import * as $profile_segments from "./routes/profile/segments.tsx";
+import * as $profile_stats from "./routes/profile/stats.tsx";
 import * as $profile_user from "./routes/profile/user.tsx";
 import * as $routes_slug_ from "./routes/routes/[slug].tsx";
 import * as $tasks from "./routes/tasks.tsx";
@@ -46,6 +47,7 @@ const manifest = {
     "./routes/profile/index.tsx": $profile_index,
     "./routes/profile/routes.tsx": $profile_routes,
     "./routes/profile/segments.tsx": $profile_segments,
+    "./routes/profile/stats.tsx": $profile_stats,
     "./routes/profile/user.tsx": $profile_user,
     "./routes/routes/[slug].tsx": $routes_slug_,
     "./routes/tasks.tsx": $tasks,
