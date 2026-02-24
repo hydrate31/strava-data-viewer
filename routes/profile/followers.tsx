@@ -350,7 +350,7 @@ export const Followers = (props: PageProps<Props>) => (
                     src={props.data.athletes?.find((entry) =>
                       entry.id == follow.athelete_id
                     )?.avatarUrl}
-                    style="height: 1em; width: 1em; vertical align-bottom; margin-right: 0.5em;"
+                    class="avatar-inline"
                   />
                   <a
                     href={`https://www.strava.com/athletes/${follow.athelete_id}`}
@@ -398,7 +398,7 @@ export const Followers = (props: PageProps<Props>) => (
                     src={props.data.athletes?.find((entry) =>
                       entry.id == follow.athelete_id
                     )?.avatarUrl}
-                    style="height: 1em; width: 1em; vertical align-bottom; margin-right: 0.5em;"
+                    class="avatar-inline"
                   />
                   <a
                     href={`https://www.strava.com/athletes/${follow.athelete_id}`}

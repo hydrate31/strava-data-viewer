@@ -126,7 +126,7 @@ export default function UploadDropzone(
       </label>
 
       {showProgress && (
-        <div style="width: 100%;">
+        <div class="full-width">
           <div
             class="task-progress"
             role="progressbar"

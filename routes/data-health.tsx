@@ -119,6 +119,12 @@ const isDataQualityFixAction = (
     action === "remove_malformed_records";
 };
 
+const statusClassName = (value: string) =>
+  `status-pill is-${value.toLowerCase().replaceAll(" ", "_")}`;
+
+const severityClassName = (value: IssueSeverity) =>
+  `status-pill is-${value.toLowerCase().replaceAll(" ", "_")}`;
+
 const buildDatasets = async (
   folder: string,
   strava: StravaDataService,
@@ -397,7 +403,9 @@ export const DataHealth = (props: PageProps<Props>) => {
           <h3>Data Quality Center</h3>
           <p>
             Scan task status:{" "}
-            <strong>{props.data.health.qualityTask.status}</strong>{" "}
+            <span class={statusClassName(props.data.health.qualityTask.status)}>
+              {props.data.health.qualityTask.status}
+            </span>{" "}
             ({props.data.health.qualityTask.percentage}%)
           </p>
           <p>
@@ -408,6 +416,7 @@ export const DataHealth = (props: PageProps<Props>) => {
           <form method="post">
             <input type="hidden" name="action" value="run_quality_scan" />
             <button
+              class="primary"
               type="submit"
               disabled={props.data.health.qualityTask.status === "running" ||
                 props.data.health.qualityTask.status === "queued"}
@@ -440,7 +449,9 @@ export const DataHealth = (props: PageProps<Props>) => {
                 <tr>
                   <td>{issue.label}</td>
                   <td>
-                    <strong>{issue.severity}</strong>
+                    <span class={severityClassName(issue.severity)}>
+                      {issue.severity}
+                    </span>
                   </td>
                   <td>{issue.count}</td>
                   <td>
@@ -460,7 +471,7 @@ export const DataHealth = (props: PageProps<Props>) => {
                             name="action"
                             value={issue.fixAction}
                           />
-                          <button type="submit">Run Fix</button>
+                          <button type="submit" class="primary">Run Fix</button>
                         </form>
                       )
                       : <span>-</span>}
@@ -489,7 +500,11 @@ export const DataHealth = (props: PageProps<Props>) => {
               {props.data.health.datasets.map((dataset) => (
                 <tr>
                   <td>{dataset.name}</td>
-                  <td>{dataset.status}</td>
+                  <td>
+                    <span class={statusClassName(dataset.status)}>
+                      {dataset.status}
+                    </span>
+                  </td>
                   <td>{dataset.required ? "Yes" : "No"}</td>
                   <td>{dataset.records}</td>
                   <td>

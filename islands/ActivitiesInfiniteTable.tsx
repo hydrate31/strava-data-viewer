@@ -191,10 +191,7 @@ export default function ActivitiesInfiniteTable(
           ))}
         </tbody>
       </table>
-      <div
-        ref={loadingRef}
-        style="height: 40px; text-align: center; padding: 8px 0;"
-      >
+      <div ref={loadingRef} class="infinite-scroll-sentinel">
         {loading && <span>Loading more...</span>}
         {!loading && !hasMore && filteredActivities > 0 && (
           <span>All activities loaded.</span>

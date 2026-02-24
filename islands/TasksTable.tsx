@@ -40,6 +40,9 @@ const runningSince = (startedAt: string | null) => {
   return `${hours}h ${minutes}m ${seconds}s`;
 };
 
+const statusClassName = (status: string) =>
+  `status-pill is-${status.toLowerCase().replaceAll(" ", "_")}`;
+
 export default function TasksTable({ initialTasks }: TasksTableProps) {
   const [tasks, setTasks] = useState<TaskRow[]>(initialTasks);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -90,7 +93,11 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
         {tasks.map((task) => (
           <tr>
             <td>{task.name}</td>
-            <td>{task.state.status}</td>
+            <td>
+              <span class={statusClassName(task.state.status)}>
+                {task.state.status}
+              </span>
+            </td>
             <td>
               <TimeAgo value={task.state.updatedAt || null} />
             </td>

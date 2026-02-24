@@ -1,8 +1,8 @@
 header {
-  background-color: white;
+  background-color: var(--color-bg-surface);
   width: 100%;
   height: 55px;
-  
+
   > nav {
     display: flex;
     flex-direction: row;
@@ -21,21 +21,21 @@ header {
       align-items: center;
 
       &[selected] {
-        box-shadow: inset 0 -2px 0 0 #fc5200;
+        box-shadow: inset 0 -2px 0 0 var(--color-brand);
       }
 
       > a {
-        color: #494950;
+        color: var(--color-nav-link);
         text-decoration: none;
-        font-family: "Segoe UI", "Helvetica Neue";
+        font-family: var(--font-family-base);
         font-size: 1em;
-        
+
         &:hover {
-          color: #fc5200;
+          color: var(--color-brand);
         }
       }
     }
   }
 
-  border-bottom: 1px solid #f0f0f5;
+  border-bottom: 1px solid var(--color-border-muted);
 }

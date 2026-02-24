@@ -1,6 +1,6 @@
 img.avatar-img {
   border-radius: 50%;
-  border: 0.2em solid white;
+  border: 0.2em solid var(--color-bg-surface);
 }
 
 h1 {
@@ -8,7 +8,7 @@ h1 {
 
   > a {
     text-decoration: none;
-    color: black;
+    color: var(--color-text);
     font-size: 0.8em;
     font-weight: 600;
   }
@@ -84,7 +84,7 @@ ul.media-header-grid {
 .profile-page {
   margin-top: -3em;
   padding-inline: 1.2em;
-  background-color: white;
+  background-color: var(--color-bg-surface);
 }
 
 ul.clubs-list {
