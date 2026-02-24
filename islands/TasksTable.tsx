@@ -77,118 +77,126 @@ export default function TasksTable({ initialTasks }: TasksTableProps) {
   }, []);
 
   return (
-    <table ref={tableRef}>
-      <thead>
-        <tr>
-          <th>Task</th>
-          <th>Status</th>
-          <th>Updated At</th>
-          <th>Running Since</th>
-          <th>Error</th>
-          <th>Progress</th>
-          <th>Run</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tasks.map((task) => (
+    <div class="table-scroll">
+      <table ref={tableRef} class="responsive-table">
+        <thead>
           <tr>
-            <td>{task.name}</td>
-            <td>
-              <span class={statusClassName(task.state.status)}>
-                {task.state.status}
-              </span>
-            </td>
-            <td>
-              <TimeAgo value={task.state.updatedAt || null} />
-            </td>
-            <td>{runningSince(task.state.startedAt)}</td>
-            <td>{task.state.error || "-"}</td>
-            <td>
-              <div
-                class="task-progress"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={clamp(task.state.percentage)}
-              >
-                <div
-                  class="task-progress-fill"
-                  style={`width: ${clamp(task.state.percentage)}%;`}
-                />
-                <span class="task-progress-label">
-                  {clamp(task.state.percentage)}%
-                </span>
-              </div>
-            </td>
-            <td>
-              {task.state.status === "running" && (
-                <form
-                  method="post"
-                  onSubmit={(event) => {
-                    if (
-                      !globalThis.confirm(
-                        "Force stop this task? This will request cancellation immediately.",
-                      )
-                    ) {
-                      event.preventDefault();
-                    }
-                  }}
-                >
-                  <input
-                    type="hidden"
-                    name="task_type"
-                    value={task.type.toString()}
-                  />
-                  <input type="hidden" name="action" value="force_stop" />
-                  <input type="hidden" name="confirm_force_stop" value="yes" />
-                  <button type="submit" class="danger">Force Stop</button>
-                </form>
-              )}
-
-              {task.state.status !== "running" &&
-                task.type === TaskType.DataQualityFix && (
-                <form method="post">
-                  <input
-                    type="hidden"
-                    name="task_type"
-                    value={task.type.toString()}
-                  />
-                  <input type="hidden" name="action" value="run" />
-                  <select name="fix_action">
-                    {dataQualityFixOptions.map((option) => (
-                      <option value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                  <button
-                    type="submit"
-                    disabled={task.state.status === "queued"}
-                  >
-                    Run
-                  </button>
-                </form>
-              )}
-
-              {task.state.status !== "running" &&
-                task.type !== TaskType.DataQualityFix && (
-                <form method="post">
-                  <input
-                    type="hidden"
-                    name="task_type"
-                    value={task.type.toString()}
-                  />
-                  <input type="hidden" name="action" value="run" />
-                  <button
-                    type="submit"
-                    disabled={task.state.status === "queued"}
-                  >
-                    Run
-                  </button>
-                </form>
-              )}
-            </td>
+            <th>Task</th>
+            <th>Status</th>
+            <th>Updated At</th>
+            <th>Running Since</th>
+            <th>Error</th>
+            <th>Progress</th>
+            <th>Run</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {tasks.map((task) => (
+            <tr>
+              <td data-label="Task">{task.name}</td>
+              <td data-label="Status">
+                <span class={statusClassName(task.state.status)}>
+                  {task.state.status}
+                </span>
+              </td>
+              <td data-label="Updated At">
+                <TimeAgo value={task.state.updatedAt || null} />
+              </td>
+              <td data-label="Running Since">
+                {runningSince(task.state.startedAt)}
+              </td>
+              <td data-label="Error">{task.state.error || "-"}</td>
+              <td data-label="Progress">
+                <div
+                  class="task-progress"
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={clamp(task.state.percentage)}
+                >
+                  <div
+                    class="task-progress-fill"
+                    style={`width: ${clamp(task.state.percentage)}%;`}
+                  />
+                  <span class="task-progress-label">
+                    {clamp(task.state.percentage)}%
+                  </span>
+                </div>
+              </td>
+              <td data-label="Run">
+                {task.state.status === "running" && (
+                  <form
+                    method="post"
+                    onSubmit={(event) => {
+                      if (
+                        !globalThis.confirm(
+                          "Force stop this task? This will request cancellation immediately.",
+                        )
+                      ) {
+                        event.preventDefault();
+                      }
+                    }}
+                  >
+                    <input
+                      type="hidden"
+                      name="task_type"
+                      value={task.type.toString()}
+                    />
+                    <input type="hidden" name="action" value="force_stop" />
+                    <input
+                      type="hidden"
+                      name="confirm_force_stop"
+                      value="yes"
+                    />
+                    <button type="submit" class="danger">Force Stop</button>
+                  </form>
+                )}
+
+                {task.state.status !== "running" &&
+                  task.type === TaskType.DataQualityFix && (
+                  <form method="post">
+                    <input
+                      type="hidden"
+                      name="task_type"
+                      value={task.type.toString()}
+                    />
+                    <input type="hidden" name="action" value="run" />
+                    <select name="fix_action">
+                      {dataQualityFixOptions.map((option) => (
+                        <option value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="submit"
+                      disabled={task.state.status === "queued"}
+                    >
+                      Run
+                    </button>
+                  </form>
+                )}
+
+                {task.state.status !== "running" &&
+                  task.type !== TaskType.DataQualityFix && (
+                  <form method="post">
+                    <input
+                      type="hidden"
+                      name="task_type"
+                      value={task.type.toString()}
+                    />
+                    <input type="hidden" name="action" value="run" />
+                    <button
+                      type="submit"
+                      disabled={task.state.status === "queued"}
+                    >
+                      Run
+                    </button>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

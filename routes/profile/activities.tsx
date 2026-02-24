@@ -442,69 +442,71 @@ export const Activities = (props: PageProps<Props>) => (
       </form>
 
       {props.data.savedViews.length > 0 && (
-        <table class="compact-table">
-          <thead>
-            <tr>
-              <th>Saved Views</th>
-              <th>Apply</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.savedViews.map((view) => (
+        <div class="table-scroll">
+          <table class="compact-table responsive-table">
+            <thead>
               <tr>
-                <td>{view.name}</td>
-                <td>
-                  <a
-                    class="button-link"
-                    href={`/profile/activities?${
-                      queryFromFilters(view.filters, 1, props.data.pageSize)
-                    }`}
-                  >
-                    Open
-                  </a>
-                </td>
-                <td>
-                  <form method="post">
-                    <input type="hidden" name="action" value="delete_view" />
-                    <input type="hidden" name="view_name" value={view.name} />
-                    <input
-                      type="hidden"
-                      name="q"
-                      value={props.data.filters.q}
-                    />
-                    <input
-                      type="hidden"
-                      name="sport"
-                      value={props.data.filters.sport}
-                    />
-                    <input
-                      type="hidden"
-                      name="date_from"
-                      value={props.data.filters.date_from}
-                    />
-                    <input
-                      type="hidden"
-                      name="date_to"
-                      value={props.data.filters.date_to}
-                    />
-                    <input
-                      type="hidden"
-                      name="min_distance"
-                      value={props.data.filters.min_distance}
-                    />
-                    <input
-                      type="hidden"
-                      name="max_distance"
-                      value={props.data.filters.max_distance}
-                    />
-                    <button type="submit" class="danger">Delete</button>
-                  </form>
-                </td>
+                <th>Saved Views</th>
+                <th>Apply</th>
+                <th>Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.savedViews.map((view) => (
+                <tr>
+                  <td data-label="Saved Views">{view.name}</td>
+                  <td data-label="Apply">
+                    <a
+                      class="button-link"
+                      href={`/profile/activities?${
+                        queryFromFilters(view.filters, 1, props.data.pageSize)
+                      }`}
+                    >
+                      Open
+                    </a>
+                  </td>
+                  <td data-label="Delete">
+                    <form method="post">
+                      <input type="hidden" name="action" value="delete_view" />
+                      <input type="hidden" name="view_name" value={view.name} />
+                      <input
+                        type="hidden"
+                        name="q"
+                        value={props.data.filters.q}
+                      />
+                      <input
+                        type="hidden"
+                        name="sport"
+                        value={props.data.filters.sport}
+                      />
+                      <input
+                        type="hidden"
+                        name="date_from"
+                        value={props.data.filters.date_from}
+                      />
+                      <input
+                        type="hidden"
+                        name="date_to"
+                        value={props.data.filters.date_to}
+                      />
+                      <input
+                        type="hidden"
+                        name="min_distance"
+                        value={props.data.filters.min_distance}
+                      />
+                      <input
+                        type="hidden"
+                        name="max_distance"
+                        value={props.data.filters.max_distance}
+                      />
+                      <button type="submit" class="danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {props.data.message && (

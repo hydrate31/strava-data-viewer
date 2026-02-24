@@ -259,69 +259,71 @@ export const Followers = (props: PageProps<Props>) => (
       </form>
 
       {props.data.savedViews.length > 0 && (
-        <table class="compact-table">
-          <thead>
-            <tr>
-              <th>Saved Views</th>
-              <th>Apply</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.savedViews.map((view) => (
+        <div class="table-scroll">
+          <table class="compact-table responsive-table">
+            <thead>
               <tr>
-                <td>{view.name}</td>
-                <td>
-                  <a
-                    class="button-link"
-                    href={`/profile/followers?${
-                      queryFromFilters(view.filters)
-                    }`}
-                  >
-                    Open
-                  </a>
-                </td>
-                <td>
-                  <form method="post">
-                    <input type="hidden" name="action" value="delete_view" />
-                    <input type="hidden" name="view_name" value={view.name} />
-                    <input
-                      type="hidden"
-                      name="q"
-                      value={props.data.filters.q}
-                    />
-                    <input
-                      type="hidden"
-                      name="date_from"
-                      value={props.data.filters.date_from}
-                    />
-                    <input
-                      type="hidden"
-                      name="date_to"
-                      value={props.data.filters.date_to}
-                    />
-                    <input
-                      type="hidden"
-                      name="sport"
-                      value={props.data.filters.sport}
-                    />
-                    <input
-                      type="hidden"
-                      name="min_distance"
-                      value={props.data.filters.min_distance}
-                    />
-                    <input
-                      type="hidden"
-                      name="max_distance"
-                      value={props.data.filters.max_distance}
-                    />
-                    <button type="submit" class="danger">Delete</button>
-                  </form>
-                </td>
+                <th>Saved Views</th>
+                <th>Apply</th>
+                <th>Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.savedViews.map((view) => (
+                <tr>
+                  <td data-label="Saved Views">{view.name}</td>
+                  <td data-label="Apply">
+                    <a
+                      class="button-link"
+                      href={`/profile/followers?${
+                        queryFromFilters(view.filters)
+                      }`}
+                    >
+                      Open
+                    </a>
+                  </td>
+                  <td data-label="Delete">
+                    <form method="post">
+                      <input type="hidden" name="action" value="delete_view" />
+                      <input type="hidden" name="view_name" value={view.name} />
+                      <input
+                        type="hidden"
+                        name="q"
+                        value={props.data.filters.q}
+                      />
+                      <input
+                        type="hidden"
+                        name="date_from"
+                        value={props.data.filters.date_from}
+                      />
+                      <input
+                        type="hidden"
+                        name="date_to"
+                        value={props.data.filters.date_to}
+                      />
+                      <input
+                        type="hidden"
+                        name="sport"
+                        value={props.data.filters.sport}
+                      />
+                      <input
+                        type="hidden"
+                        name="min_distance"
+                        value={props.data.filters.min_distance}
+                      />
+                      <input
+                        type="hidden"
+                        name="max_distance"
+                        value={props.data.filters.max_distance}
+                      />
+                      <button type="submit" class="danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {props.data.message && (
@@ -334,48 +336,50 @@ export const Followers = (props: PageProps<Props>) => (
     <section>
       <h3>Following</h3>
       {props.data.following.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Athelete</th>
-              <th>Contact</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.following.map((follow: any) => (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td>
-                  <img
-                    src={props.data.athletes?.find((entry) =>
-                      entry.id == follow.athelete_id
-                    )?.avatarUrl}
-                    class="avatar-inline"
-                  />
-                  <a
-                    href={`https://www.strava.com/athletes/${follow.athelete_id}`}
-                  >
-                    {props.data.athletes?.find((entry) =>
-                      entry.id == follow.athelete_id
-                    )?.name ?? follow.athelete_id}
-                  </a>
-                </td>
-                <td>
-                  {props.data.contacts.find((contact) =>
-                    contact.athlete_id == follow.athelete_id
-                  )?.contact ?? "-"}
-                </td>
-                <td title={follow.created_at}>
-                  <button disabled>
-                    {follow.status == "Accepted"
-                      ? "Follow Requested"
-                      : "Following"}
-                  </button>
-                </td>
+                <th>Athelete</th>
+                <th>Contact</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.following.map((follow: any) => (
+                <tr>
+                  <td data-label="Athelete">
+                    <img
+                      src={props.data.athletes?.find((entry) =>
+                        entry.id == follow.athelete_id
+                      )?.avatarUrl}
+                      class="avatar-inline"
+                    />
+                    <a
+                      href={`https://www.strava.com/athletes/${follow.athelete_id}`}
+                    >
+                      {props.data.athletes?.find((entry) =>
+                        entry.id == follow.athelete_id
+                      )?.name ?? follow.athelete_id}
+                    </a>
+                  </td>
+                  <td data-label="Contact">
+                    {props.data.contacts.find((contact) =>
+                      contact.athlete_id == follow.athelete_id
+                    )?.contact ?? "-"}
+                  </td>
+                  <td data-label="Status" title={follow.created_at}>
+                    <button disabled>
+                      {follow.status == "Accepted"
+                        ? "Follow Requested"
+                        : "Following"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {props.data.following.length == 0 && <p>None</p>}
       <br />
@@ -383,40 +387,42 @@ export const Followers = (props: PageProps<Props>) => (
       <h3>Followers</h3>
 
       {props.data.followers.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Athelete</th>
-              <th>Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.followers.map((follow: any) => (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td>
-                  <img
-                    src={props.data.athletes?.find((entry) =>
-                      entry.id == follow.athelete_id
-                    )?.avatarUrl}
-                    class="avatar-inline"
-                  />
-                  <a
-                    href={`https://www.strava.com/athletes/${follow.athelete_id}`}
-                  >
-                    {props.data.athletes?.find((entry) =>
-                      entry.id == follow.athelete_id
-                    )?.name ?? follow.athelete_id}
-                  </a>
-                </td>
-                <td>
-                  {props.data.contacts.find((contact) =>
-                    contact.athlete_id == follow.athelete_id
-                  )?.contact ?? "-"}
-                </td>
+                <th>Athelete</th>
+                <th>Contact</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.followers.map((follow: any) => (
+                <tr>
+                  <td data-label="Athelete">
+                    <img
+                      src={props.data.athletes?.find((entry) =>
+                        entry.id == follow.athelete_id
+                      )?.avatarUrl}
+                      class="avatar-inline"
+                    />
+                    <a
+                      href={`https://www.strava.com/athletes/${follow.athelete_id}`}
+                    >
+                      {props.data.athletes?.find((entry) =>
+                        entry.id == follow.athelete_id
+                      )?.name ?? follow.athelete_id}
+                    </a>
+                  </td>
+                  <td data-label="Contact">
+                    {props.data.contacts.find((contact) =>
+                      contact.athlete_id == follow.athelete_id
+                    )?.contact ?? "-"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {props.data.followers.length == 0 && <p>None</p>}
     </section>

@@ -253,63 +253,65 @@ export const Routes = ({ data }: PageProps<Props>) => (
       </form>
 
       {data.savedViews.length > 0 && (
-        <table class="compact-table">
-          <thead>
-            <tr>
-              <th>Saved Views</th>
-              <th>Apply</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.savedViews.map((view) => (
+        <div class="table-scroll">
+          <table class="compact-table responsive-table">
+            <thead>
               <tr>
-                <td>{view.name}</td>
-                <td>
-                  <a
-                    class="button-link"
-                    href={`/profile/routes?${queryFromFilters(view.filters)}`}
-                  >
-                    Open
-                  </a>
-                </td>
-                <td>
-                  <form method="post">
-                    <input type="hidden" name="action" value="delete_view" />
-                    <input type="hidden" name="view_name" value={view.name} />
-                    <input type="hidden" name="q" value={data.filters.q} />
-                    <input
-                      type="hidden"
-                      name="date_from"
-                      value={data.filters.date_from}
-                    />
-                    <input
-                      type="hidden"
-                      name="date_to"
-                      value={data.filters.date_to}
-                    />
-                    <input
-                      type="hidden"
-                      name="min_distance"
-                      value={data.filters.min_distance}
-                    />
-                    <input
-                      type="hidden"
-                      name="max_distance"
-                      value={data.filters.max_distance}
-                    />
-                    <input
-                      type="hidden"
-                      name="sport"
-                      value={data.filters.sport}
-                    />
-                    <button type="submit" class="danger">Delete</button>
-                  </form>
-                </td>
+                <th>Saved Views</th>
+                <th>Apply</th>
+                <th>Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.savedViews.map((view) => (
+                <tr>
+                  <td data-label="Saved Views">{view.name}</td>
+                  <td data-label="Apply">
+                    <a
+                      class="button-link"
+                      href={`/profile/routes?${queryFromFilters(view.filters)}`}
+                    >
+                      Open
+                    </a>
+                  </td>
+                  <td data-label="Delete">
+                    <form method="post">
+                      <input type="hidden" name="action" value="delete_view" />
+                      <input type="hidden" name="view_name" value={view.name} />
+                      <input type="hidden" name="q" value={data.filters.q} />
+                      <input
+                        type="hidden"
+                        name="date_from"
+                        value={data.filters.date_from}
+                      />
+                      <input
+                        type="hidden"
+                        name="date_to"
+                        value={data.filters.date_to}
+                      />
+                      <input
+                        type="hidden"
+                        name="min_distance"
+                        value={data.filters.min_distance}
+                      />
+                      <input
+                        type="hidden"
+                        name="max_distance"
+                        value={data.filters.max_distance}
+                      />
+                      <input
+                        type="hidden"
+                        name="sport"
+                        value={data.filters.sport}
+                      />
+                      <button type="submit" class="danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {data.message && (
@@ -319,48 +321,50 @@ export const Routes = ({ data }: PageProps<Props>) => (
       )}
     </section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Map</th>
-          <th>Name</th>
-          <th>File</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.routes.map((route) => (
+    <div class="table-scroll">
+      <table class="responsive-table">
+        <thead>
           <tr>
-            <td>
-              <div class="thumbnail-frame">
-                {data.routeImageIds.includes(routeImageId(route.filename)) && (
-                  <img
-                    class="thumbnail-image"
-                    src={`/route-images/${
-                      routeImageId(route.filename)
-                    }.svg?v=${data.routeImageVersion}`}
-                    alt={`Route image for ${route.name}`}
-                    loading="lazy"
-                  />
-                )}
-                {!data.routeImageIds.includes(routeImageId(route.filename)) && (
-                  <span class="thumbnail-placeholder">No map</span>
-                )}
-              </div>
-            </td>
-            <td>
-              <a
-                href={`/routes/${
-                  route.filename.replace("routes/", "").replace(".gpx", "")
-                }`}
-              >
-                {route.name}
-              </a>
-            </td>
-            <td>{route.filename}</td>
+            <th>Map</th>
+            <th>Name</th>
+            <th>File</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.routes.map((route) => (
+            <tr>
+              <td data-label="Map">
+                <div class="thumbnail-frame">
+                  {data.routeImageIds.includes(routeImageId(route.filename)) &&
+                    (
+                      <img
+                        class="thumbnail-image"
+                        src={`/route-images/${
+                          routeImageId(route.filename)
+                        }.svg?v=${data.routeImageVersion}`}
+                        alt={`Route image for ${route.name}`}
+                        loading="lazy"
+                      />
+                    )}
+                  {!data.routeImageIds.includes(routeImageId(route.filename)) &&
+                    <span class="thumbnail-placeholder">No map</span>}
+                </div>
+              </td>
+              <td data-label="Name">
+                <a
+                  href={`/routes/${
+                    route.filename.replace("routes/", "").replace(".gpx", "")
+                  }`}
+                >
+                  {route.name}
+                </a>
+              </td>
+              <td data-label="File">{route.filename}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </>
 );
 

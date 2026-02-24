@@ -434,89 +434,97 @@ export const DataHealth = (props: PageProps<Props>) => {
               <strong>{props.data.message}</strong>
             </p>
           )}
-          <table>
-            <thead>
-              <tr>
-                <th>Issue</th>
-                <th>Severity</th>
-                <th>Count</th>
-                <th>Details</th>
-                <th>Fix</th>
-              </tr>
-            </thead>
-            <tbody>
-              {props.data.health.qualityIssues.map((issue) => (
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead>
                 <tr>
-                  <td>{issue.label}</td>
-                  <td>
-                    <span class={severityClassName(issue.severity)}>
-                      {issue.severity}
-                    </span>
-                  </td>
-                  <td>{issue.count}</td>
-                  <td>
-                    <div>{issue.description}</div>
-                    {issue.samples.length > 0 && (
-                      <small>
-                        Sample: <code>{issue.samples.join(", ")}</code>
-                      </small>
-                    )}
-                  </td>
-                  <td>
-                    {issue.fixAction && issue.count > 0
-                      ? (
-                        <form method="post">
-                          <input
-                            type="hidden"
-                            name="action"
-                            value={issue.fixAction}
-                          />
-                          <button type="submit" class="primary">Run Fix</button>
-                        </form>
-                      )
-                      : <span>-</span>}
-                  </td>
+                  <th>Issue</th>
+                  <th>Severity</th>
+                  <th>Count</th>
+                  <th>Details</th>
+                  <th>Fix</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {props.data.health.qualityIssues.map((issue) => (
+                  <tr>
+                    <td data-label="Issue">{issue.label}</td>
+                    <td data-label="Severity">
+                      <span class={severityClassName(issue.severity)}>
+                        {issue.severity}
+                      </span>
+                    </td>
+                    <td data-label="Count">{issue.count}</td>
+                    <td data-label="Details">
+                      <div>{issue.description}</div>
+                      {issue.samples.length > 0 && (
+                        <small>
+                          Sample: <code>{issue.samples.join(", ")}</code>
+                        </small>
+                      )}
+                    </td>
+                    <td data-label="Fix">
+                      {issue.fixAction && issue.count > 0
+                        ? (
+                          <form method="post">
+                            <input
+                              type="hidden"
+                              name="action"
+                              value={issue.fixAction}
+                            />
+                            <button type="submit" class="primary">
+                              Run Fix
+                            </button>
+                          </form>
+                        )
+                        : <span>-</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section>
           <h3>Data Health</h3>
           <h4>Datasets</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Dataset</th>
-                <th>Status</th>
-                <th>Required</th>
-                <th>Records</th>
-                <th>File</th>
-                <th>Modified</th>
-              </tr>
-            </thead>
-            <tbody>
-              {props.data.health.datasets.map((dataset) => (
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead>
                 <tr>
-                  <td>{dataset.name}</td>
-                  <td>
-                    <span class={statusClassName(dataset.status)}>
-                      {dataset.status}
-                    </span>
-                  </td>
-                  <td>{dataset.required ? "Yes" : "No"}</td>
-                  <td>{dataset.records}</td>
-                  <td>
-                    <code>{dataset.file}</code>
-                  </td>
-                  <td>
-                    <TimeAgo value={dataset.modified} />
-                  </td>
+                  <th>Dataset</th>
+                  <th>Status</th>
+                  <th>Required</th>
+                  <th>Records</th>
+                  <th>File</th>
+                  <th>Modified</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {props.data.health.datasets.map((dataset) => (
+                  <tr>
+                    <td data-label="Dataset">{dataset.name}</td>
+                    <td data-label="Status">
+                      <span class={statusClassName(dataset.status)}>
+                        {dataset.status}
+                      </span>
+                    </td>
+                    <td data-label="Required">
+                      {dataset.required ? "Yes" : "No"}
+                    </td>
+                    <td data-label="Records">{dataset.records}</td>
+                    <td data-label="File">
+                      <code>{dataset.file}</code>
+                    </td>
+                    <td data-label="Modified">
+                      <TimeAgo value={dataset.modified} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </>
