@@ -117,24 +117,26 @@ export const Overview = (props: PageProps<Props>) => (
 
       <h3>Events</h3>
       {props.data.events.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Start Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.events.map((event) => (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td>{event.title}</td>
-                <td>{event.description}</td>
-                <td>{event.start_time}</td>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Start Time</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.events.map((event) => (
+                <tr>
+                  <td data-label="Title">{event.title}</td>
+                  <td data-label="Description">{event.description}</td>
+                  <td data-label="Start Time">{event.start_time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {props.data.events.length == 0 && <p>None</p>}
     </section>
@@ -155,22 +157,24 @@ export const Overview = (props: PageProps<Props>) => (
     <section>
       <h3>Comments</h3>
       {props.data.comments.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.comments.map((comment) => (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td>{comment.comment_date}</td>
-                <td>{comment.comment}</td>
+                <th>Date</th>
+                <th>Comment</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.comments.map((comment) => (
+                <tr>
+                  <td data-label="Date">{comment.comment_date}</td>
+                  <td data-label="Comment">{comment.comment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {props.data.comments.length == 0 && <p>None</p>}
     </section>
@@ -178,22 +182,24 @@ export const Overview = (props: PageProps<Props>) => (
     <section>
       <h3>Blocks</h3>
       {props.data.blocks.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Athlete ID</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.data.blocks.map((block) => (
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead>
               <tr>
-                <td>{block.athlete_id}</td>
-                <td>{block.created_at}</td>
+                <th>Athlete ID</th>
+                <th>Created At</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.data.blocks.map((block) => (
+                <tr>
+                  <td data-label="Athlete ID">{block.athlete_id}</td>
+                  <td data-label="Created At">{block.created_at}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {props.data.blocks.length == 0 && <p>None</p>}
     </section>

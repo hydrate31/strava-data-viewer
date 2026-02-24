@@ -1,24 +1,25 @@
 import { asset, Head } from "$fresh/runtime.ts";
-import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
+import { FreshContext, Handlers, PageProps } from "$fresh/src/server/types.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IRoute } from "../../packages/strava.export-data-reader/interface/route.ts";
 
 type Props = {
-    mapData: string
-    routes: IRoute[]
-    route: IRoute
-}
-  
+  mapData: string;
+  routes: IRoute[];
+  route: IRoute;
+};
+
 export const handler: Handlers<Props> = {
-    async GET(_req: Request, ctx: FreshContext) {
-        const folder = (ctx.state?.data as any)?.uid ?? 'export';
-        const strava = new StravaDataService(folder)
+  async GET(_req: Request, ctx: FreshContext) {
+    const folder = (ctx.state?.data as any)?.uid ?? "export";
+    const strava = new StravaDataService(folder);
 
-        const routes = await strava.routes.list();
-        const route = routes.filter(r => r.filename == `routes/${ctx.params.slug}.gpx`)[0];
-        const geoJson = await strava.routes.getGeoJson(route.filename)
+    const routes = await strava.routes.list();
+    const route =
+      routes.filter((r) => r.filename == `routes/${ctx.params.slug}.gpx`)[0];
+    const geoJson = await strava.routes.getGeoJson(route.filename);
 
-        const mapData = `
+    const mapData = `
             const source = ${geoJson}
 
             // Extract first coordinate from the first feature
@@ -75,38 +76,40 @@ export const handler: Handlers<Props> = {
                 });
                 map.fitBounds(bounds, { padding: 20 });
             });
-        `
+        `;
 
-        return ctx.render({
-            routes,
-            route,
-            mapData,
-        });
-    },
+    return ctx.render({
+      routes,
+      route,
+      mapData,
+    });
+  },
 };
 
 const time = {
-    getSeconds: (seconds: number) => seconds % 60,
-    getMinutes: (seconds: number) => Math.floor(seconds / 60) % 60,
-    getHours: (seconds: number) => Math.floor(Math.floor(seconds / 60) / 60),
-}
+  getSeconds: (seconds: number) => seconds % 60,
+  getMinutes: (seconds: number) => Math.floor(seconds / 60) % 60,
+  getHours: (seconds: number) => Math.floor(Math.floor(seconds / 60) / 60),
+};
 
-
-export const Route = ({ data }: PageProps<Props>) => <>
+export const Route = ({ data }: PageProps<Props>) => (
+  <>
     <Head>
-        <title>{data.route.name}</title>
-        <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
-        <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
-
+      <title>{data.route.name}</title>
+      <link
+        href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+        rel="stylesheet"
+      />
+      <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js">
+      </script>
     </Head>
     <h2>{data.route.name}</h2>
 
     <section>
-        <div id="map" style="width: 100%; height: 24rem; display: inline-block;"></div>
-        <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
+      <div id="map" class="map-canvas"></div>
+      <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
     </section>
-   
-    
-</>
+  </>
+);
 
-export default Route
+export default Route;

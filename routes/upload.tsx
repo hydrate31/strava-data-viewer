@@ -465,46 +465,52 @@ export default function UploadPage({ data }: PageProps<Props>) {
       {state?.preview && (
         <section>
           <h3>Validation Preview</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Check</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Source Root</td>
-                <td>
-                  <code>{state.preview.sourceRoot}</code>
-                </td>
-              </tr>
-              <tr>
-                <td>Total Files</td>
-                <td>{state.preview.totalFiles}</td>
-              </tr>
-              <tr>
-                <td>Activity Files</td>
-                <td>{state.preview.activityFiles}</td>
-              </tr>
-              <tr>
-                <td>Route Files</td>
-                <td>{state.preview.routeFiles}</td>
-              </tr>
-              <tr>
-                <td>Existing Data Conflict</td>
-                <td>{state.preview.hasConflicts ? "Yes" : "No"}</td>
-              </tr>
-              {state.preview.requiredFiles.map((required) => (
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead>
                 <tr>
-                  <td>
-                    Required: <code>{required.name}</code>
-                  </td>
-                  <td>{required.exists ? "Present" : "Missing"}</td>
+                  <th>Check</th>
+                  <th>Result</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Check">Source Root</td>
+                  <td data-label="Result">
+                    <code>{state.preview.sourceRoot}</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Check">Total Files</td>
+                  <td data-label="Result">{state.preview.totalFiles}</td>
+                </tr>
+                <tr>
+                  <td data-label="Check">Activity Files</td>
+                  <td data-label="Result">{state.preview.activityFiles}</td>
+                </tr>
+                <tr>
+                  <td data-label="Check">Route Files</td>
+                  <td data-label="Result">{state.preview.routeFiles}</td>
+                </tr>
+                <tr>
+                  <td data-label="Check">Existing Data Conflict</td>
+                  <td data-label="Result">
+                    {state.preview.hasConflicts ? "Yes" : "No"}
+                  </td>
+                </tr>
+                {state.preview.requiredFiles.map((required) => (
+                  <tr>
+                    <td data-label="Check">
+                      Required: <code>{required.name}</code>
+                    </td>
+                    <td data-label="Result">
+                      {required.exists ? "Present" : "Missing"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
 

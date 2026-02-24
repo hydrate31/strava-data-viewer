@@ -115,10 +115,7 @@ export const Heatmap = ({ data }: PageProps<Props>) => (
     </Head>
 
     <section class="breakout">
-      <div
-        id="map"
-        style="width: 100%; height: calc(100vh - 56px); display: inline-block;"
-      >
+      <div id="map" class="map-canvas map-canvas-fullscreen">
       </div>
       <script dangerouslySetInnerHTML={{ __html: data.mapData }} defer></script>
     </section>

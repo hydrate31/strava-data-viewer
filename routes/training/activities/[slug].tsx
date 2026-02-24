@@ -988,10 +988,7 @@ export const Activity = ({ data }: PageProps<Props>) => {
       </details>
 
       <section class="map">
-        <div
-          id="map"
-          style="width: 100%; height: 24rem; display: inline-block;"
-        >
+        <div id="map" class="map-canvas">
         </div>
         <div class="elevation-interactive" id="elevation-chart-wrap">
           <svg
@@ -1116,32 +1113,40 @@ export const Activity = ({ data }: PageProps<Props>) => {
         <article class="metric-card">
           <h3>Splits</h3>
           {data.splits.length > 0 && (
-            <table class="compact-table">
-              <thead>
-                <tr>
-                  <th>Split</th>
-                  <th>Distance</th>
-                  <th>Time</th>
-                  <th>Pace</th>
-                  <th>Elev Gain</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.splits.map((split) => (
+            <div class="table-scroll">
+              <table class="compact-table responsive-table">
+                <thead>
                   <tr>
-                    <td>{split.label}</td>
-                    <td>{split.distanceKm.toFixed(2)} km</td>
-                    <td>{secondsToClock(split.splitSeconds)}</td>
-                    <td>{secondsToPace(split.paceSecondsPerKm)}</td>
-                    <td>
-                      {split.elevationGain == null
-                        ? "-"
-                        : `${split.elevationGain.toFixed(0)} m`}
-                    </td>
+                    <th>Split</th>
+                    <th>Distance</th>
+                    <th>Time</th>
+                    <th>Pace</th>
+                    <th>Elev Gain</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.splits.map((split) => (
+                    <tr>
+                      <td data-label="Split">{split.label}</td>
+                      <td data-label="Distance">
+                        {split.distanceKm.toFixed(2)} km
+                      </td>
+                      <td data-label="Time">
+                        {secondsToClock(split.splitSeconds)}
+                      </td>
+                      <td data-label="Pace">
+                        {secondsToPace(split.paceSecondsPerKm)}
+                      </td>
+                      <td data-label="Elev Gain">
+                        {split.elevationGain == null
+                          ? "-"
+                          : `${split.elevationGain.toFixed(0)} m`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {data.splits.length === 0 && (
             <p>Split detail unavailable in this activity file.</p>

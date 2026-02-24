@@ -643,7 +643,29 @@ ul.nearby-route-list > li > span {
   margin-right: 0.5em;
 }
 
+.map-canvas {
+  width: 100%;
+  height: 24rem;
+  display: inline-block;
+}
+
+.map-canvas-fullscreen {
+  height: calc(100vh - 56px);
+}
+
 @media (max-width: 980px) {
+  nav[role="tablist"] > ul {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  nav[role="tablist"] > ul > li {
+    flex: 0 0 auto;
+  }
+
   .activity-detail-grid {
     grid-template-columns: 1fr;
   }
@@ -674,6 +696,7 @@ ul.nearby-route-list > li > span {
   table.responsive-table > tbody,
   table.responsive-table > tbody > tr,
   table.responsive-table > tbody > tr > td {
+    box-sizing: border-box;
     display: block;
     width: 100%;
   }
@@ -710,5 +733,14 @@ ul.nearby-route-list > li > span {
   table.responsive-table > tbody > tr > td > form,
   table.responsive-table > tbody > tr > td > a {
     margin-left: auto;
+  }
+
+  .map-canvas {
+    height: 18rem;
+  }
+
+  .map-canvas-fullscreen {
+    height: calc(100dvh - 50px);
+    min-height: 20rem;
   }
 }

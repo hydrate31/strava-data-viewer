@@ -256,50 +256,64 @@ export default function Stats({ data }: PageProps<Props>) {
       <div class="insight-grid">
         <article>
           <h4>Consistency Streaks</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Current</th>
-                <th>Longest</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Weekly</td>
-                <td>{data.insights.streaks.currentWeekly}</td>
-                <td>{data.insights.streaks.longestWeekly}</td>
-              </tr>
-              <tr>
-                <td>Monthly</td>
-                <td>{data.insights.streaks.currentMonthly}</td>
-                <td>{data.insights.streaks.longestMonthly}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Current</th>
+                  <th>Longest</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Type">Weekly</td>
+                  <td data-label="Current">
+                    {data.insights.streaks.currentWeekly}
+                  </td>
+                  <td data-label="Longest">
+                    {data.insights.streaks.longestWeekly}
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Type">Monthly</td>
+                  <td data-label="Current">
+                    {data.insights.streaks.currentMonthly}
+                  </td>
+                  <td data-label="Longest">
+                    {data.insights.streaks.longestMonthly}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
         <article>
           <h4>Sport Distribution</h4>
           {data.insights.sportDistribution.length > 0 && (
-            <table>
-              <thead>
-                <tr>
-                  <th>Sport</th>
-                  <th>Activities</th>
-                  <th>Distance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.insights.sportDistribution.map((sport) => (
+            <div class="table-scroll">
+              <table class="responsive-table">
+                <thead>
                   <tr>
-                    <td>{sport.sport}</td>
-                    <td>{sport.count} ({sport.share}%)</td>
-                    <td>{sport.distanceKm} km</td>
+                    <th>Sport</th>
+                    <th>Activities</th>
+                    <th>Distance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.insights.sportDistribution.map((sport) => (
+                    <tr>
+                      <td data-label="Sport">{sport.sport}</td>
+                      <td data-label="Activities">
+                        {sport.count} ({sport.share}%)
+                      </td>
+                      <td data-label="Distance">{sport.distanceKm} km</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {data.insights.sportDistribution.length == 0 && <p>None</p>}
         </article>
@@ -309,24 +323,26 @@ export default function Stats({ data }: PageProps<Props>) {
         <article>
           <h4>Weekly Trend (last 12)</h4>
           {data.insights.weekly.length > 0 && (
-            <table>
-              <thead>
-                <tr>
-                  <th>Week</th>
-                  <th>Activities</th>
-                  <th>Distance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.insights.weekly.map((week) => (
+            <div class="table-scroll">
+              <table class="responsive-table">
+                <thead>
                   <tr>
-                    <td>{week.label}</td>
-                    <td>{week.count}</td>
-                    <td>{week.distanceKm} km</td>
+                    <th>Week</th>
+                    <th>Activities</th>
+                    <th>Distance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.insights.weekly.map((week) => (
+                    <tr>
+                      <td data-label="Week">{week.label}</td>
+                      <td data-label="Activities">{week.count}</td>
+                      <td data-label="Distance">{week.distanceKm} km</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {data.insights.weekly.length == 0 && <p>None</p>}
         </article>
@@ -334,24 +350,26 @@ export default function Stats({ data }: PageProps<Props>) {
         <article>
           <h4>Monthly Trend (last 12)</h4>
           {data.insights.monthly.length > 0 && (
-            <table>
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Activities</th>
-                  <th>Distance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.insights.monthly.map((month) => (
+            <div class="table-scroll">
+              <table class="responsive-table">
+                <thead>
                   <tr>
-                    <td>{month.label}</td>
-                    <td>{month.count}</td>
-                    <td>{month.distanceKm} km</td>
+                    <th>Month</th>
+                    <th>Activities</th>
+                    <th>Distance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.insights.monthly.map((month) => (
+                    <tr>
+                      <td data-label="Month">{month.label}</td>
+                      <td data-label="Activities">{month.count}</td>
+                      <td data-label="Distance">{month.distanceKm} km</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {data.insights.monthly.length == 0 && <p>None</p>}
         </article>
@@ -360,26 +378,28 @@ export default function Stats({ data }: PageProps<Props>) {
       <article>
         <h4>PR Timeline (distance breakthroughs)</h4>
         {data.insights.prTimeline.length > 0 && (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Sport</th>
-                <th>Distance PR</th>
-                <th>Activity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.insights.prTimeline.map((pr) => (
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead>
                 <tr>
-                  <td>{pr.date}</td>
-                  <td>{pr.sport}</td>
-                  <td>{pr.distanceKm} km</td>
-                  <td>{pr.name}</td>
+                  <th>Date</th>
+                  <th>Sport</th>
+                  <th>Distance PR</th>
+                  <th>Activity</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.insights.prTimeline.map((pr) => (
+                  <tr>
+                    <td data-label="Date">{pr.date}</td>
+                    <td data-label="Sport">{pr.sport}</td>
+                    <td data-label="Distance PR">{pr.distanceKm} km</td>
+                    <td data-label="Activity">{pr.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {data.insights.prTimeline.length == 0 && <p>None</p>}
       </article>
