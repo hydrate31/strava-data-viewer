@@ -1,123 +1,362 @@
 import { Head } from "$fresh/runtime.ts";
-import { FreshContext, PageProps, Handlers } from "$fresh/src/server/types.ts";
+import { FreshContext, Handlers, PageProps } from "$fresh/src/server/types.ts";
 import { TaskType } from "../../packages/sdev.tasks/interfaces/task-type.ts";
 import sdevTasks from "../../packages/sdev.tasks/index.ts";
 import { StravaDataService } from "../../packages/strava.data.service/index.ts";
 import { IMedia } from "../../packages/strava.export-data-reader/interface/media.ts";
 import { IProfile } from "../../packages/strava.export-data-reader/interface/profile.ts";
 import { IRoute } from "../../packages/strava.export-data-reader/interface/route.ts";
+import {
+  deleteView,
+  listSavedViews,
+  SavedView,
+  saveView,
+} from "../../helpers/savedViews.ts";
+
+interface RouteFilters {
+  q: string;
+  date_from: string;
+  date_to: string;
+  min_distance: string;
+  max_distance: string;
+  sport: string;
+}
 
 interface Props {
-    profile: IProfile
-    media: IMedia[]
-    routes: IRoute[]
-    routeImagesStatus: string
-    routeImageVersion: string
-    routeImageIds: string[]
+  profile: IProfile;
+  media: IMedia[];
+  routes: IRoute[];
+  routeImagesStatus: string;
+  routeImageVersion: string;
+  routeImageIds: string[];
+  filters: RouteFilters;
+  savedViews: SavedView[];
+  message: string | null;
 }
 
 const routeImageId = (filename: string) => {
-    return filename
-        .replace("routes/", "")
-        .replace(".gpx", "")
-        .replaceAll("/", "_")
-        .replaceAll("\\", "_")
-        .replaceAll("..", "_");
+  return filename
+    .replace("routes/", "")
+    .replace(".gpx", "")
+    .replaceAll("/", "_")
+    .replaceAll("\\", "_")
+    .replaceAll("..", "_");
 };
-  
+
+const queryFromFilters = (filters: Record<string, string>) => {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) params.set(key, value);
+  }
+  return params.toString();
+};
+
+const readFilters = (url: URL): RouteFilters => ({
+  q: url.searchParams.get("q") ?? "",
+  date_from: url.searchParams.get("date_from") ?? "",
+  date_to: url.searchParams.get("date_to") ?? "",
+  min_distance: url.searchParams.get("min_distance") ?? "",
+  max_distance: url.searchParams.get("max_distance") ?? "",
+  sport: url.searchParams.get("sport") ?? "",
+});
+
+const applyFilters = (routes: IRoute[], filters: RouteFilters) => {
+  const q = filters.q.trim().toLowerCase();
+  return routes.filter((route) => {
+    if (!q) return true;
+    return `${route.name} ${route.filename}`.toLowerCase().includes(q);
+  });
+};
+
 export const handler: Handlers<Props> = {
-    async GET(_req: Request, ctx: FreshContext) {
-        const folder = (ctx.state?.data as any)?.uid ?? 'export';
-        const strava = new StravaDataService(folder)
-    
-        const profile = await strava.profile.get();
-        const media = await strava.profile.getMedia();
-        const routes = await strava.routes.list();
-        const routeImagesStatus = await sdevTasks.status(TaskType.GenerateRouteImages, folder);
-        const routeImageIds: string[] = [];
-        let latestImageTimestamp = 0;
+  async GET(req: Request, ctx: FreshContext) {
+    const folder = (ctx.state?.data as any)?.uid ?? "export";
+    const strava = new StravaDataService(folder);
+    const url = new URL(req.url);
+    const filters = readFilters(url);
 
-        try {
-            for await (const entry of Deno.readDir(`./data/${folder}/route-images`)) {
-                if (!entry.isFile || !entry.name.endsWith(".svg")) continue;
-                const id = entry.name.replace(".svg", "");
-                routeImageIds.push(id);
+    const profile = await strava.profile.get();
+    const media = await strava.profile.getMedia();
+    const routesRaw = await strava.routes.list();
+    const routeImagesStatus = await sdevTasks.status(
+      TaskType.GenerateRouteImages,
+      folder,
+    );
+    const routeImageIds: string[] = [];
+    let latestImageTimestamp = 0;
 
-                const stat = await Deno.stat(`./data/${folder}/route-images/${entry.name}`);
-                const modified = stat.mtime?.getTime() ?? 0;
-                if (modified > latestImageTimestamp) latestImageTimestamp = modified;
-            }
-        } catch {}
+    try {
+      for await (const entry of Deno.readDir(`./data/${folder}/route-images`)) {
+        if (!entry.isFile || !entry.name.endsWith(".svg")) continue;
+        const id = entry.name.replace(".svg", "");
+        routeImageIds.push(id);
 
-        return ctx.render({
-            profile,
-            media,
-            routes,
-            routeImagesStatus,
-            routeImageVersion: String(latestImageTimestamp),
-            routeImageIds,
-        });
-    },
+        const stat = await Deno.stat(
+          `./data/${folder}/route-images/${entry.name}`,
+        );
+        const modified = stat.mtime?.getTime() ?? 0;
+        if (modified > latestImageTimestamp) latestImageTimestamp = modified;
+      }
+    } catch {
+      // no-op
+    }
 
-    async POST(_req: Request, ctx: FreshContext) {
-        const exportFilename = (ctx.state?.data as any)?.uid ?? 'export';
+    return ctx.render({
+      profile,
+      media,
+      routes: applyFilters(routesRaw, filters),
+      routeImagesStatus,
+      routeImageVersion: String(latestImageTimestamp),
+      routeImageIds,
+      filters,
+      savedViews: await listSavedViews(folder, "routes"),
+      message: url.searchParams.get("message"),
+    });
+  },
 
-        await sdevTasks.forceStop({
-            userId: exportFilename,
-            type: TaskType.GenerateRouteImages,
-            body: "Stopping route images generation before regeneration."
-        });
+  async POST(req: Request, ctx: FreshContext) {
+    const folder = (ctx.state?.data as any)?.uid ?? "export";
+    const form = await req.formData();
+    const action = form.get("action")?.toString() ?? "regenerate_images";
 
-        await sdevTasks.enqueue({
-            userId: exportFilename,
-            type: TaskType.GenerateRouteImages,
-            body: "Generating route images."
-        });
+    const filters: Record<string, string> = {
+      q: form.get("q")?.toString() ?? "",
+      date_from: form.get("date_from")?.toString() ?? "",
+      date_to: form.get("date_to")?.toString() ?? "",
+      min_distance: form.get("min_distance")?.toString() ?? "",
+      max_distance: form.get("max_distance")?.toString() ?? "",
+      sport: form.get("sport")?.toString() ?? "",
+    };
 
-        const { pathname } = new URL(_req.url);
-        const fullUrl = _req.url.replace(pathname, "");
-        return Response.redirect(fullUrl + "/profile/routes");
-    },
+    if (action === "save_view") {
+      const name = form.get("view_name")?.toString() ?? "";
+      await saveView(folder, "routes", name, filters);
+      const query = queryFromFilters(filters);
+      return Response.redirect(
+        new URL(
+          `/profile/routes?${query}${query ? "&" : ""}message=${
+            encodeURIComponent("Saved view.")
+          }`,
+          req.url,
+        ),
+        303,
+      );
+    }
+
+    if (action === "delete_view") {
+      const name = form.get("view_name")?.toString() ?? "";
+      await deleteView(folder, "routes", name);
+      const query = queryFromFilters(filters);
+      return Response.redirect(
+        new URL(
+          `/profile/routes?${query}${query ? "&" : ""}message=${
+            encodeURIComponent("Deleted view.")
+          }`,
+          req.url,
+        ),
+        303,
+      );
+    }
+
+    await sdevTasks.forceStop({
+      userId: folder,
+      type: TaskType.GenerateRouteImages,
+      body: "Stopping route images generation before regeneration.",
+    });
+
+    await sdevTasks.enqueue({
+      userId: folder,
+      type: TaskType.GenerateRouteImages,
+      body: "Generating route images.",
+    });
+
+    return Response.redirect(new URL("/profile/routes", req.url), 303);
+  },
 };
 
-export const Routes = ({ data }: PageProps<Props>) => <>
+export const Routes = ({ data }: PageProps<Props>) => (
+  <>
     <Head>
-        <title>Routes</title>
+      <title>Routes</title>
     </Head>
     <section>
-        <form method="post" encType="multipart/form-data">
-            <button type="submit" disabled={data.routeImagesStatus == "running"}>
-                Regenerate Route Images {data.routeImagesStatus == "running" ? ": Processing" : ""}
-            </button>
-        </form>
+      <form method="post" encType="multipart/form-data">
+        <input type="hidden" name="action" value="regenerate_images" />
+        <button type="submit" disabled={data.routeImagesStatus == "running"}>
+          Regenerate Route Images{" "}
+          {data.routeImagesStatus == "running" ? ": Processing" : ""}
+        </button>
+      </form>
+    </section>
+
+    <section>
+      <h3>Filters</h3>
+      <form method="get">
+        <input
+          type="text"
+          name="q"
+          placeholder="Keyword"
+          value={data.filters.q}
+        />
+        <input type="date" name="date_from" value={data.filters.date_from} />
+        <input type="date" name="date_to" value={data.filters.date_to} />
+        <input
+          type="number"
+          step="0.1"
+          name="min_distance"
+          placeholder="Min km"
+          value={data.filters.min_distance}
+        />
+        <input
+          type="number"
+          step="0.1"
+          name="max_distance"
+          placeholder="Max km"
+          value={data.filters.max_distance}
+        />
+        <input
+          type="text"
+          name="sport"
+          placeholder="Sport"
+          value={data.filters.sport}
+        />
+        <button type="submit">Apply</button>
+        <a href="/profile/routes">
+          <button type="button">Reset</button>
+        </a>
+      </form>
+
+      <form method="post">
+        <input type="hidden" name="action" value="save_view" />
+        <input type="hidden" name="q" value={data.filters.q} />
+        <input type="hidden" name="date_from" value={data.filters.date_from} />
+        <input type="hidden" name="date_to" value={data.filters.date_to} />
+        <input
+          type="hidden"
+          name="min_distance"
+          value={data.filters.min_distance}
+        />
+        <input
+          type="hidden"
+          name="max_distance"
+          value={data.filters.max_distance}
+        />
+        <input type="hidden" name="sport" value={data.filters.sport} />
+        <input
+          type="text"
+          name="view_name"
+          placeholder="Save current view as..."
+        />
+        <button type="submit">Save View</button>
+      </form>
+
+      {data.savedViews.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Saved Views</th>
+              <th>Apply</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.savedViews.map((view) => (
+              <tr>
+                <td>{view.name}</td>
+                <td>
+                  <a href={`/profile/routes?${queryFromFilters(view.filters)}`}>
+                    Open
+                  </a>
+                </td>
+                <td>
+                  <form method="post">
+                    <input type="hidden" name="action" value="delete_view" />
+                    <input type="hidden" name="view_name" value={view.name} />
+                    <input type="hidden" name="q" value={data.filters.q} />
+                    <input
+                      type="hidden"
+                      name="date_from"
+                      value={data.filters.date_from}
+                    />
+                    <input
+                      type="hidden"
+                      name="date_to"
+                      value={data.filters.date_to}
+                    />
+                    <input
+                      type="hidden"
+                      name="min_distance"
+                      value={data.filters.min_distance}
+                    />
+                    <input
+                      type="hidden"
+                      name="max_distance"
+                      value={data.filters.max_distance}
+                    />
+                    <input
+                      type="hidden"
+                      name="sport"
+                      value={data.filters.sport}
+                    />
+                    <button type="submit" class="danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {data.message && (
+        <p>
+          <strong>{data.message}</strong>
+        </p>
+      )}
     </section>
 
     <table>
-        <thead>
-            <tr>
-                <th>Map</th>
-                <th>Name</th>
-                <th>File</th>
-            </tr>
-        </thead>
-        <tbody>
-            {data.routes.map(route => <tr>
-                <td>
-                    <div class="thumbnail-frame">
-                        {data.routeImageIds.includes(routeImageId(route.filename)) && <img
-                            class="thumbnail-image"
-                            src={`/route-images/${routeImageId(route.filename)}.svg?v=${data.routeImageVersion}`}
-                            alt={`Route image for ${route.name}`}
-                            loading="lazy"
-                        />}
-                        {!data.routeImageIds.includes(routeImageId(route.filename)) && <span class="thumbnail-placeholder">No map</span>}
-                    </div>
-                </td>
-                <td><a href={`/routes/${route.filename.replace("routes/", "").replace(".gpx", "")}`}>{route.name}</a></td>
-                <td>{route.filename}</td>
-            </tr>)}
-        </tbody>
+      <thead>
+        <tr>
+          <th>Map</th>
+          <th>Name</th>
+          <th>File</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.routes.map((route) => (
+          <tr>
+            <td>
+              <div class="thumbnail-frame">
+                {data.routeImageIds.includes(routeImageId(route.filename)) && (
+                  <img
+                    class="thumbnail-image"
+                    src={`/route-images/${
+                      routeImageId(route.filename)
+                    }.svg?v=${data.routeImageVersion}`}
+                    alt={`Route image for ${route.name}`}
+                    loading="lazy"
+                  />
+                )}
+                {!data.routeImageIds.includes(routeImageId(route.filename)) && (
+                  <span class="thumbnail-placeholder">No map</span>
+                )}
+              </div>
+            </td>
+            <td>
+              <a
+                href={`/routes/${
+                  route.filename.replace("routes/", "").replace(".gpx", "")
+                }`}
+              >
+                {route.name}
+              </a>
+            </td>
+            <td>{route.filename}</td>
+          </tr>
+        ))}
+      </tbody>
     </table>
-</>
+  </>
+);
 
-export default Routes
+export default Routes;
