@@ -4,6 +4,7 @@ header {
   height: 55px;
 
   > nav {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -47,11 +48,9 @@ header {
     > nav {
       justify-content: center;
       gap: 1.25em;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-inline: 0.8em;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
+      overflow: visible;
+      padding-inline: 0;
+      margin-inline: auto;
 
       > li {
         flex: 0 0 auto;
