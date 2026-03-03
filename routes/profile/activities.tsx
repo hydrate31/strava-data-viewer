@@ -361,7 +361,6 @@ export const Activities = (props: PageProps<Props>) => (
         <button
           class="primary"
           type="submit"
-          disabled={props.data.activityImagesStatus == "running"}
         >
           Regenerate Activity Images{" "}
           {props.data.activityImagesStatus == "running" ? ": Processing" : ""}

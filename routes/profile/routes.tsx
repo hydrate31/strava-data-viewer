@@ -186,7 +186,6 @@ export const Routes = ({ data }: PageProps<Props>) => (
         <button
           class="primary"
           type="submit"
-          disabled={data.routeImagesStatus == "running"}
         >
           Regenerate Route Images{" "}
           {data.routeImagesStatus == "running" ? ": Processing" : ""}

@@ -2,6 +2,15 @@ import colors from "npm:colors";
 import { StravaDataService } from "../../strava.data.service/index.ts";
 import geoImageGenerator from "../../geo.imagegenerator/index.ts";
 
+const resolveTileServerFromEnv = (): string | undefined => {
+    const value = Deno.env.get("GEO_IMAGE_TILING_SERVER")
+        ?? Deno.env.get("GEO_IMAGE_TILE_SERVER")
+        ?? Deno.env.get("TILING_SERVER")
+        ?? Deno.env.get("TILE_SERVER");
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : undefined;
+};
+
 export const activityImages = {
     generate: async (
         folder: string,
@@ -11,6 +20,7 @@ export const activityImages = {
     ) => {
         console.log(colors.blue("::Task::") + "Generating Activity Images");
         const outputDir = `./data/${folder}/activity-images`;
+        const tilingServer = resolveTileServerFromEnv();
         try { await Deno.mkdir(outputDir, { recursive: true }); } catch {}
 
         const activities = await strava.activities.list();
@@ -27,7 +37,10 @@ export const activityImages = {
             try {
                 const geoJsonText = await strava.activities.getGeoJson(id);
                 const geojson = JSON.parse(geoJsonText);
-                const svg = geoImageGenerator.generateSVG(geojson);
+                const svg = await geoImageGenerator.generateSVG(
+                    geojson,
+                    tilingServer ? { tilingServer } : {},
+                );
                 if (!svg) continue;
 
                 await Deno.writeTextFile(`${outputDir}/${activity.activity_id}.svg`, svg);

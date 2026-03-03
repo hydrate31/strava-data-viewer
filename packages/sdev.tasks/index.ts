@@ -26,6 +26,10 @@ const undeliveredKey = (
   type: TaskType,
   userId: string,
 ) => ["undelivered", `${type}:${userId}`];
+const restartKey = (
+  type: TaskType,
+  userId: string,
+) => [`task_restart:${type}:${userId}`];
 const legacyStatusKey = (
   type: TaskType,
   userId: string,
@@ -115,20 +119,39 @@ const sdevTasks = {
       statusKey(entry.type, entry.userId),
       buildState("stopped", { percentage: 0, startedAt: null }),
     );
+    await tasks.delete(activeKey(entry.type, entry.userId));
     await tasks.delete(undeliveredKey(entry.type, entry.userId));
     await tasks.delete(legacyUndeliveredKey(entry.type, entry.userId));
+    await tasks.delete(restartKey(entry.type, entry.userId));
   },
   enqueue: async (entry: QueueEntry) => {
     const current = await getTaskState(entry.type, entry.userId);
     const running = current.status;
     const active = await isTaskActive(entry.type, entry.userId);
 
-    if (running === "running" || running === "queued" || active) {
-      console.log("Task already running.");
+    const staleRunning = running === "running" && !active;
+    const staleQueued = running === "queued" && !active;
+    if (staleRunning || staleQueued) {
+      await tasks.set(
+        statusKey(entry.type, entry.userId),
+        buildState("stopped", { percentage: 0, startedAt: null, error: null }),
+      );
+      await tasks.delete(cancelKey(entry.type, entry.userId));
+      await tasks.delete(activeKey(entry.type, entry.userId));
+    } else if (running === "running" || running === "queued" || active) {
+      console.log("Task already running. Requesting force-stop then retry.");
+      await tasks.set(cancelKey(entry.type, entry.userId), true);
+      await tasks.set(restartKey(entry.type, entry.userId), entry);
+      await tasks.set(
+        statusKey(entry.type, entry.userId),
+        buildState("queued", { percentage: current.percentage, startedAt: null, error: null }),
+      );
       return;
     }
+
     console.log(`Queued ${entry.type} for user: ${entry.userId}`);
     await tasks.delete(cancelKey(entry.type, entry.userId));
+    await tasks.delete(restartKey(entry.type, entry.userId));
     await tasks.set(
       statusKey(entry.type, entry.userId),
       buildState("queued", { percentage: 0, startedAt: null }),
@@ -186,8 +209,9 @@ tasks.listenQueue(async (entry: QueueEntry) => {
   const running = current.status;
 
   if (running === "running") {
-    await tasks.delete(undeliveredKey(entry.type, entry.userId));
-    await tasks.delete(legacyUndeliveredKey(entry.type, entry.userId));
+    // Queue can deliver while a previous run is active. Preserve this request
+    // by recording a retry payload rather than dropping it.
+    await tasks.set(restartKey(entry.type, entry.userId), entry);
     return;
   }
 
@@ -313,6 +337,12 @@ tasks.listenQueue(async (entry: QueueEntry) => {
     await tasks.delete(cancelKey(entry.type, entry.userId));
     await tasks.delete(undeliveredKey(entry.type, entry.userId));
     await tasks.delete(legacyUndeliveredKey(entry.type, entry.userId));
+
+    const restart = await tasks.get<QueueEntry>(restartKey(entry.type, entry.userId));
+    if (restart.value) {
+      await tasks.delete(restartKey(entry.type, entry.userId));
+      await sdevTasks.enqueue(restart.value);
+    }
   }
 
   console.log(`Finished ${entry.type} for user: ${entry.userId}`);

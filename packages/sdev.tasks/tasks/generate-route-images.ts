@@ -2,6 +2,15 @@ import colors from "npm:colors";
 import { StravaDataService } from "../../strava.data.service/index.ts";
 import geoImageGenerator from "../../geo.imagegenerator/index.ts";
 
+const resolveTileServerFromEnv = (): string | undefined => {
+    const value = Deno.env.get("GEO_IMAGE_TILING_SERVER")
+        ?? Deno.env.get("GEO_IMAGE_TILE_SERVER")
+        ?? Deno.env.get("TILING_SERVER")
+        ?? Deno.env.get("TILE_SERVER");
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : undefined;
+};
+
 const getRouteImageId = (filename: string) => {
     return filename
         .replace("routes/", "")
@@ -20,6 +29,7 @@ export const routeImages = {
     ) => {
         console.log(colors.blue("::Task::") + "Generating Route Images");
         const outputDir = `./data/${folder}/route-images`;
+        const tilingServer = resolveTileServerFromEnv();
         try { await Deno.mkdir(outputDir, { recursive: true }); } catch {}
 
         const routes = await strava.routes.list();
@@ -30,7 +40,13 @@ export const routeImages = {
             try {
                 const geoJsonText = await strava.routes.getGeoJson(route.filename);
                 const geojson = JSON.parse(geoJsonText);
-                const svg = geoImageGenerator.generateSVG(geojson);
+                const svg = await geoImageGenerator.generateSVG(
+                    geojson,
+                    {
+                        tilingServer,
+                        embedTiles: true,
+                    },
+                );
                 if (!svg) continue;
 
                 const id = getRouteImageId(route.filename);
